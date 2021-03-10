@@ -143,8 +143,9 @@ am__objects_1 = gpu/libHPCbanal_la-GPUCFGFactory.lo \
 	gpu/libHPCbanal_la-GraphReader.lo \
 	gpu/libHPCbanal_la-CudaCFGParser.lo \
 	gpu/libHPCbanal_la-ReadCudaCFG.lo \
-	gpu/libHPCbanal_la-ReadIntelCFG.lo libHPCbanal_la-Struct.lo \
-	libHPCbanal_la-Struct-Inline.lo \
+	gpu/libHPCbanal_la-ReadIntelCFG.lo \
+	gpu/libHPCbanal_la-IntelInstructionEncoder.lo \
+	libHPCbanal_la-Struct.lo libHPCbanal_la-Struct-Inline.lo \
 	libHPCbanal_la-Struct-Output.lo
 am_libHPCbanal_la_OBJECTS = $(am__objects_1)
 libHPCbanal_la_OBJECTS = $(am_libHPCbanal_la_OBJECTS)
@@ -535,6 +536,7 @@ MYSOURCES = \
 	gpu/CudaCFGParser.cpp  \
 	gpu/ReadCudaCFG.cpp \
 	gpu/ReadIntelCFG.cpp \
+	gpu/IntelInstructionEncoder.cpp \
 	Struct.cpp  \
 	Struct-Inline.cpp  \
 	Struct-Output.cpp
@@ -638,6 +640,8 @@ gpu/libHPCbanal_la-ReadCudaCFG.lo: gpu/$(am__dirstamp) \
 	gpu/$(DEPDIR)/$(am__dirstamp)
 gpu/libHPCbanal_la-ReadIntelCFG.lo: gpu/$(am__dirstamp) \
 	gpu/$(DEPDIR)/$(am__dirstamp)
+gpu/libHPCbanal_la-IntelInstructionEncoder.lo: gpu/$(am__dirstamp) \
+	gpu/$(DEPDIR)/$(am__dirstamp)
 
 libHPCbanal.la: $(libHPCbanal_la_OBJECTS) $(libHPCbanal_la_DEPENDENCIES) $(EXTRA_libHPCbanal_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libHPCbanal_la_LINK)  $(libHPCbanal_la_OBJECTS) $(libHPCbanal_la_LIBADD) $(LIBS)
@@ -663,6 +667,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gpu/$(DEPDIR)/libHPCbanal_la-GPUCodeSource.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gpu/$(DEPDIR)/libHPCbanal_la-GPUFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gpu/$(DEPDIR)/libHPCbanal_la-GraphReader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gpu/$(DEPDIR)/libHPCbanal_la-IntelInstructionEncoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gpu/$(DEPDIR)/libHPCbanal_la-ReadCudaCFG.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gpu/$(DEPDIR)/libHPCbanal_la-ReadIntelCFG.Plo@am__quote@
 
@@ -745,6 +750,13 @@ gpu/libHPCbanal_la-ReadIntelCFG.lo: gpu/ReadIntelCFG.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='gpu/ReadIntelCFG.cpp' object='gpu/libHPCbanal_la-ReadIntelCFG.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libHPCbanal_la_CXXFLAGS) $(CXXFLAGS) -c -o gpu/libHPCbanal_la-ReadIntelCFG.lo `test -f 'gpu/ReadIntelCFG.cpp' || echo '$(srcdir)/'`gpu/ReadIntelCFG.cpp
+
+gpu/libHPCbanal_la-IntelInstructionEncoder.lo: gpu/IntelInstructionEncoder.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libHPCbanal_la_CXXFLAGS) $(CXXFLAGS) -MT gpu/libHPCbanal_la-IntelInstructionEncoder.lo -MD -MP -MF gpu/$(DEPDIR)/libHPCbanal_la-IntelInstructionEncoder.Tpo -c -o gpu/libHPCbanal_la-IntelInstructionEncoder.lo `test -f 'gpu/IntelInstructionEncoder.cpp' || echo '$(srcdir)/'`gpu/IntelInstructionEncoder.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) gpu/$(DEPDIR)/libHPCbanal_la-IntelInstructionEncoder.Tpo gpu/$(DEPDIR)/libHPCbanal_la-IntelInstructionEncoder.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='gpu/IntelInstructionEncoder.cpp' object='gpu/libHPCbanal_la-IntelInstructionEncoder.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libHPCbanal_la_CXXFLAGS) $(CXXFLAGS) -c -o gpu/libHPCbanal_la-IntelInstructionEncoder.lo `test -f 'gpu/IntelInstructionEncoder.cpp' || echo '$(srcdir)/'`gpu/IntelInstructionEncoder.cpp
 
 libHPCbanal_la-Struct.lo: Struct.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libHPCbanal_la_CXXFLAGS) $(CXXFLAGS) -MT libHPCbanal_la-Struct.lo -MD -MP -MF $(DEPDIR)/libHPCbanal_la-Struct.Tpo -c -o libHPCbanal_la-Struct.lo `test -f 'Struct.cpp' || echo '$(srcdir)/'`Struct.cpp

@@ -79,7 +79,10 @@
 #include "GPUFunction.hpp"
 #include "GPUBlock.hpp"
 #include "GPUCodeSource.hpp"
+#include "IntelInstructionEncoder.hpp"
 #include "ReadIntelCFG.hpp"
+
+
 
 //******************************************************************************
 // macros
@@ -94,6 +97,7 @@ using namespace Dyninst;
 using namespace ParseAPI;
 using namespace SymtabAPI;
 using namespace InstructionAPI;
+
 
 static void 
 addCustomFunctionObject
@@ -228,7 +232,8 @@ readIntelCFG
  Dyninst::SymtabAPI::Symtab *the_symtab, 
  bool cfg_wanted,
  Dyninst::ParseAPI::CodeSource **code_src, 
- Dyninst::ParseAPI::CodeObject **code_obj
+ Dyninst::ParseAPI::CodeObject **code_obj,
+ bool slice
 )
 {
   if (cfg_wanted) {
@@ -252,6 +257,10 @@ readIntelCFG
     *code_src = new GPUCodeSource(functions, the_symtab); 
     *code_obj = new CodeObject(*code_src, cfg_fact);
     (*code_obj)->parse();
+
+    if (slice) {
+      sliceIntelInstructions((*code_obj)->funcs(), functions);
+    }
 
     return true;
   }

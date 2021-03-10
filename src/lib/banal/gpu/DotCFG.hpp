@@ -15,6 +15,8 @@ namespace GPUParse {
 
 typedef Dyninst::Architecture Arch;
 
+struct InstructionStat; // forward-declaration
+
 struct Inst {
   int offset;
   int size;
@@ -29,6 +31,7 @@ struct Inst {
   std::string target;
   std::vector<std::string> operands;
   Arch arch;
+  InstructionStat *inst_stat;
 
   // Constructor for dummy inst
   Inst(int offset, int size, Arch arch) : offset(offset), size(size), dual_first(false), dual_second(false),
@@ -137,6 +140,127 @@ struct CudaInst : public Inst {
   }
 };
 
+
+struct InstructionStat {
+  enum PredicateFlag {
+    PREDICATE_NONE = 0,
+    PREDICATE_TRUE = 1,
+    PREDICATE_FALSE = 2,
+  };  
+
+  static int const WAIT_BITS = 6;
+  static int const BARRIER_NONE = 7;
+
+  struct Control {
+    uint8_t reuse;
+    uint8_t wait;
+    uint8_t read;
+    uint8_t write;
+    uint8_t yield;
+    uint8_t stall;
+
+    Control() : reuse(0), wait(0), read(7), write(7), yield(0), stall(1) {}
+  };  
+
+  std::string op; 
+  int pc; 
+  int predicate;  // P0-P6
+  int barrier_threshold = -1; 
+  bool indirect = false; // indirect memory addressing
+  PredicateFlag predicate_flag;
+  std::vector<int> predicate_assign_pcs;
+  std::vector<int> dsts;    // R0-R255: only records normal registers
+  std::vector<int> srcs;    // R0-R255: only records normal registers
+  std::vector<int> pdsts;   // P0-P6: only records predicate registers
+  std::vector<int> psrcs;   // P0-P6: only records predicate registers
+  std::vector<int> bdsts;   // B1-B6: only records barriers
+  std::vector<int> bsrcs;   // B1-B6: only records barriers
+  std::vector<int> arfdsts;   // UR0-UR63: only records ARF regsters. Is this needed?
+  std::vector<int> arfsrcs;   // UR0-UR63: only records ARF regsters
+  std::map<int, std::vector<int> > assign_pcs;
+  std::map<int, std::vector<int> > passign_pcs;
+  std::map<int, std::vector<int> > bassign_pcs;
+  std::map<int, std::vector<int> > uassign_pcs;
+  std::map<int, std::vector<int> > upassign_pcs;
+  Control control;
+
+  InstructionStat() {}
+
+  explicit InstructionStat(Inst *inst);
+
+  InstructionStat(const std::string &op, int pc, int predicate, PredicateFlag predicate_flag,
+                  std::vector<int> &predicate_assign_pcs, std::vector<int> &dsts,
+                  std::vector<int> &srcs, std::vector<int> &pdsts, std::vector<int> &psrcs,
+                  std::vector<int> &bdsts, std::vector<int> &bsrcs)
+      : op(op),
+        pc(pc),
+        predicate(predicate),
+        predicate_flag(predicate_flag),
+        predicate_assign_pcs(predicate_assign_pcs),
+        dsts(dsts),
+        srcs(srcs),
+        pdsts(pdsts),
+        psrcs(psrcs),
+        bdsts(bdsts),
+        bsrcs(bsrcs) {}
+
+  InstructionStat(const std::string &op, int pc, int predicate, PredicateFlag predicate_flag,
+                  std::vector<int> &predicate_assign_pcs, std::vector<int> &dsts,
+                  std::vector<int> &srcs, std::vector<int> &pdsts, std::vector<int> &psrcs,
+                  std::vector<int> &bdsts, std::vector<int> &bsrcs,
+                  std::map<int, std::vector<int> > &assign_pcs,
+                  std::map<int, std::vector<int> > &passign_pcs,
+                  std::map<int, std::vector<int> > &bassign_pcs,
+                  std::map<int, std::vector<int> > &uassign_pcs,
+                  std::map<int, std::vector<int> > &upassign_pcs)
+      : op(op),
+        pc(pc),
+        predicate(predicate),
+        predicate_flag(predicate_flag),
+        predicate_assign_pcs(predicate_assign_pcs),
+        dsts(dsts),
+        srcs(srcs),
+        pdsts(pdsts),
+        psrcs(psrcs),
+        bdsts(bdsts),
+        bsrcs(bsrcs),
+        assign_pcs(assign_pcs),
+        passign_pcs(passign_pcs),
+        bassign_pcs(bassign_pcs),
+        uassign_pcs(uassign_pcs),
+        upassign_pcs(upassign_pcs) {}
+
+  InstructionStat(const std::string &op, int pc, int predicate, int barrier_threshold,
+                  bool indirect, PredicateFlag predicate_flag,
+                  std::vector<int> &predicate_assign_pcs, std::vector<int> &dsts,
+                  std::vector<int> &srcs, std::vector<int> &pdsts, std::vector<int> &psrcs,
+                  std::vector<int> &bdsts, std::vector<int> &bsrcs,
+                  std::map<int, std::vector<int> > &assign_pcs,
+                  std::map<int, std::vector<int> > &passign_pcs,
+                  std::map<int, std::vector<int> > &bassign_pcs,
+                  std::map<int, std::vector<int> > &uassign_pcs,
+                  std::map<int, std::vector<int> > &upassign_pcs, Control &control)
+    : op(op),
+    pc(pc),
+    predicate(predicate),
+    barrier_threshold(barrier_threshold),
+    indirect(indirect),
+    predicate_flag(predicate_flag),
+    predicate_assign_pcs(predicate_assign_pcs),
+    dsts(dsts),
+    srcs(srcs),
+    pdsts(pdsts),
+    psrcs(psrcs),
+    bdsts(bdsts),
+    bsrcs(bsrcs),
+    assign_pcs(assign_pcs),
+    passign_pcs(passign_pcs),
+    bassign_pcs(bassign_pcs),
+    uassign_pcs(uassign_pcs),
+    upassign_pcs(upassign_pcs),
+    control(control) {}
+
+};
 
 struct Block;
 

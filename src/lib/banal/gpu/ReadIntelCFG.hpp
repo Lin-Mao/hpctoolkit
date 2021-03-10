@@ -88,7 +88,8 @@ readIntelCFG
  Dyninst::SymtabAPI::Symtab *the_symtab, 
  bool cfg_wanted,
  Dyninst::ParseAPI::CodeSource **code_src, 
- Dyninst::ParseAPI::CodeObject **code_obj
+ Dyninst::ParseAPI::CodeObject **code_obj,
+ bool slice = true
 );
 
 #endif
