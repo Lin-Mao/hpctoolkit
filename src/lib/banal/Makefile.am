@@ -79,7 +79,6 @@ MYSOURCES = \
 	gpu/CudaCFGParser.cpp  \
 	gpu/ReadCudaCFG.cpp \
 	gpu/ReadIntelCFG.cpp \
-	gpu/IntelInstructionEncoder.cpp \
 	Struct.cpp  \
 	Struct-Inline.cpp  \
 	Struct-Output.cpp

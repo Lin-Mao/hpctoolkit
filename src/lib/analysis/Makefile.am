@@ -58,7 +58,7 @@
 #############################################################################
 
 # We do not want the standard GNU files (NEWS README AUTHORS ChangeLog...)
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 #############################################################################
 # Common settings
@@ -74,6 +74,10 @@ MYSOURCES = \
 	CallPath.hpp CallPath.cpp \
 	CallPath-MetricComponentsFact.hpp CallPath-MetricComponentsFact.cpp \
 	CallPath-CudaCFG.hpp CallPath-CudaCFG.cpp \
+	\
+	intel-advisor/IntelGPUInstruction.cpp \
+	intel-advisor/IntelGPUAdvisor.cpp \
+	intel-advisor/IntelInstructionAnalyzer.cpp \
 	\
 	Flat-SrcCorrelation.hpp Flat-SrcCorrelation.cpp \
 	Flat-ObjCorrelation.hpp Flat-ObjCorrelation.cpp \

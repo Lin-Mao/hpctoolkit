@@ -79,7 +79,7 @@
 #include "GPUFunction.hpp"
 #include "GPUBlock.hpp"
 #include "GPUCodeSource.hpp"
-#include "IntelInstructionEncoder.hpp"
+#include "IntelInstructionAnalyzer.hpp"
 #include "ReadIntelCFG.hpp"
 
 

@@ -12,8 +12,8 @@
 // local includes
 //******************************************************************************
 
-#include "DotCFG.hpp"
-#include "IntelInstructionEncoder.hpp"
+//#include "DotCFG.hpp"
+#include "IntelInstructionAnalyzer.hpp"
 
 
 
@@ -37,6 +37,7 @@ static int TRACK_LIMIT = 8;
 // type definitions
 //******************************************************************************
 
+#if 0
 class IgnoreRegPred : public Dyninst::Slicer::Predicates {
   public:
     IgnoreRegPred(std::vector<Dyninst::AbsRegion> &rhs) : _rhs(rhs) {}
@@ -201,12 +202,23 @@ static void trackDependency(const std::map<int, GPUParse::InstructionStat *> &in
     }    
   }
 }
-
+#endif
 
 
 //******************************************************************************
 // interface operations
 //******************************************************************************
+
+void
+readIntelInstructions
+(
+ std::string file,
+ std::vector<GPUParse::Function *> functions
+)
+{
+  return;
+}
+
 
 void
 sliceIntelInstructions
@@ -286,8 +298,8 @@ sliceIntelInstructions
           TRACK_LIMIT = 1;
 #endif
           auto barrier_threshold = inst_stat->barrier_threshold;
-          trackDependency(inst_stat_map, inst_addr, func_addr, predicate_map, exit_begin, inst_stat,
-              barrier_threshold, 0);
+          //trackDependency(inst_stat_map, inst_addr, func_addr, predicate_map, exit_begin, inst_stat,
+          //    barrier_threshold, 0);
         }
       }
     }

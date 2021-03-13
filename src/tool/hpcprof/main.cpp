@@ -73,6 +73,7 @@ using std::string;
 
 #include "Args.hpp"
 
+#include <lib/analysis/intel-advisor/IntelGPUInstruction.hpp>
 #include <lib/analysis/CallPath-CudaCFG.hpp>
 #include <lib/analysis/CallPath.hpp>
 #include <lib/analysis/Util.hpp>
@@ -201,6 +202,9 @@ realmain(int argc, char* const* argv)
   prof->structure(structure);
 
   bool printProgress = true;
+
+  // call to Intel GPA. right now, intel has only instruction blamer support
+  auto advice = overlayIntelGPUInstructionsMain(*prof, args.instructionFiles, "Gen9"); // args.gpuArch
 
   Analysis::CallPath::overlayStaticStructureMain(*prof, args.agent,
 						 args.doNormalizeTy, printProgress);
