@@ -139,7 +139,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libHPCprofile_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
+libHPCprofile_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = stdshim/libHPCprofile_la-shared_mutex.lo \
 	stdshim/libHPCprofile_la-atomic.lo \
@@ -159,6 +160,7 @@ am__objects_1 = stdshim/libHPCprofile_la-shared_mutex.lo \
 	sinks/libHPCprofile_la-hpctracedb2.lo \
 	sinks/libHPCprofile_la-packed.lo \
 	sinks/libHPCprofile_la-experimentxml4.lo \
+	sinks/libHPCprofile_la-intel-advisor.lo \
 	finalizers/libHPCprofile_la-struct.lo \
 	finalizers/libHPCprofile_la-directclassification.lo \
 	finalizers/libHPCprofile_la-denseids.lo
@@ -172,7 +174,7 @@ libHPCprofile_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(libHPCprofile_la_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-libHPCprofile_standalone_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libHPCprofile_standalone_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
 am__objects_2 = mpi/libHPCprofile_standalone_la-standalone.lo
 am_libHPCprofile_standalone_la_OBJECTS = $(am__objects_2)
 libHPCprofile_standalone_la_OBJECTS =  \
@@ -566,6 +568,10 @@ HPCLIB_SupportLean = $(top_builddir)/src/lib/support-lean/libHPCsupport-lean.la
 #############################################################################
 # Local settings
 #############################################################################
+@OPT_ENABLE_IGC_TRUE@IGC_IFLAGS = @OPT_IGC_IFLAGS@
+@OPT_ENABLE_IGC_TRUE@IGA_LDFLGS = @OPT_IGC_LDFLAGS@
+@OPT_ENABLE_METRICS_DISCOVERY_TRUE@MD_IFLAGS = @OPT_METRICS_DISCOVERY_IFLAGS@
+@OPT_DYNINST_LIBDWARF_TRUE@DWARF_IFLAGS = -I$(LIBDWARF_INC)
 MYSOURCES = \
 	stdshim/shared_mutex.cpp stdshim/atomic.cpp stdshim/futex-detail.c \
 	\
@@ -578,6 +584,7 @@ MYSOURCES = \
 	sources/hpcrun.cpp sources/packed.cpp sources/hpcrun4.cpp \
 	\
 	sinks/hpctracedb2.cpp sinks/packed.cpp sinks/experimentxml4.cpp \
+	sinks/intel-advisor.cpp \
 	\
 	finalizers/struct.cpp finalizers/directclassification.cpp \
 	finalizers/denseids.cpp
@@ -588,11 +595,13 @@ MYSTANDALONESOURCES = mpi/standalone.cpp
 MYCFLAGS = @HOST_CFLAGS@ $(HPC_IFLAGS) @VALGRIND_IFLAGS@ \
 	-I@LIBELF_INC@ $(am__append_1)
 MYCXXFLAGS = @HOST_CXXFLAGS@ $(HPC_IFLAGS) @BOOST_IFLAGS@ \
-	@VALGRIND_IFLAGS@ @XERCES_IFLAGS@ -I@LIBELF_INC@ -std=gnu++17 \
-	$(am__append_2)
+	@VALGRIND_IFLAGS@ $(IGC_IFLAGS) $(MD_IFLAGS) $(DYNINST_IFLAGS) \
+	@XERCES_IFLAGS@ -I@LIBELF_INC@ -std=gnu++17 $(am__append_2)
 @IS_HOST_AR_FALSE@MYAR = $(AR) cru
 @IS_HOST_AR_TRUE@MYAR = @HOST_AR@
-MYLIBADD = @HOST_LIBTREPOSITORY@ -L@LIBELF_LIB@ -ldw -lelf
+MYLIBADD = @HOST_LIBTREPOSITORY@ -L@LIBELF_LIB@ -ldw -lelf	\
+					 $(IGA_LDFLGS)
+
 MYCLEAN = @HOST_LIBTREPOSITORY@
 
 #############################################################################
@@ -715,6 +724,8 @@ sinks/libHPCprofile_la-packed.lo: sinks/$(am__dirstamp) \
 	sinks/$(DEPDIR)/$(am__dirstamp)
 sinks/libHPCprofile_la-experimentxml4.lo: sinks/$(am__dirstamp) \
 	sinks/$(DEPDIR)/$(am__dirstamp)
+sinks/libHPCprofile_la-intel-advisor.lo: sinks/$(am__dirstamp) \
+	sinks/$(DEPDIR)/$(am__dirstamp)
 finalizers/$(am__dirstamp):
 	@$(MKDIR_P) finalizers
 	@: > finalizers/$(am__dirstamp)
@@ -777,6 +788,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@mpi/$(DEPDIR)/libHPCprofile_standalone_la-standalone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sinks/$(DEPDIR)/libHPCprofile_la-experimentxml4.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sinks/$(DEPDIR)/libHPCprofile_la-hpctracedb2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sinks/$(DEPDIR)/libHPCprofile_la-intel-advisor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sinks/$(DEPDIR)/libHPCprofile_la-packed.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sources/$(DEPDIR)/libHPCprofile_la-hpcrun.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sources/$(DEPDIR)/libHPCprofile_la-hpcrun4.Plo@am__quote@
@@ -1005,6 +1017,13 @@ sinks/libHPCprofile_la-experimentxml4.lo: sinks/experimentxml4.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sinks/experimentxml4.cpp' object='sinks/libHPCprofile_la-experimentxml4.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libHPCprofile_la_CXXFLAGS) $(CXXFLAGS) -c -o sinks/libHPCprofile_la-experimentxml4.lo `test -f 'sinks/experimentxml4.cpp' || echo '$(srcdir)/'`sinks/experimentxml4.cpp
+
+sinks/libHPCprofile_la-intel-advisor.lo: sinks/intel-advisor.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libHPCprofile_la_CXXFLAGS) $(CXXFLAGS) -MT sinks/libHPCprofile_la-intel-advisor.lo -MD -MP -MF sinks/$(DEPDIR)/libHPCprofile_la-intel-advisor.Tpo -c -o sinks/libHPCprofile_la-intel-advisor.lo `test -f 'sinks/intel-advisor.cpp' || echo '$(srcdir)/'`sinks/intel-advisor.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sinks/$(DEPDIR)/libHPCprofile_la-intel-advisor.Tpo sinks/$(DEPDIR)/libHPCprofile_la-intel-advisor.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sinks/intel-advisor.cpp' object='sinks/libHPCprofile_la-intel-advisor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libHPCprofile_la_CXXFLAGS) $(CXXFLAGS) -c -o sinks/libHPCprofile_la-intel-advisor.lo `test -f 'sinks/intel-advisor.cpp' || echo '$(srcdir)/'`sinks/intel-advisor.cpp
 
 finalizers/libHPCprofile_la-struct.lo: finalizers/struct.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libHPCprofile_la_CXXFLAGS) $(CXXFLAGS) -MT finalizers/libHPCprofile_la-struct.lo -MD -MP -MF finalizers/$(DEPDIR)/libHPCprofile_la-struct.Tpo -c -o finalizers/libHPCprofile_la-struct.lo `test -f 'finalizers/struct.cpp' || echo '$(srcdir)/'`finalizers/struct.cpp

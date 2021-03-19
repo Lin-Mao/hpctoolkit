@@ -167,7 +167,7 @@ public:
 // Compare (file, line, proc) indices lexigraphically.
 class FLPCompare {
 public:
-  bool operator() (const FLPIndex t1, const FLPIndex t2)
+  bool operator() (const FLPIndex t1, const FLPIndex t2) const
   {
     if (t1.file_index < t2.file_index) { return true; }
     if (t1.file_index > t2.file_index) { return false; }

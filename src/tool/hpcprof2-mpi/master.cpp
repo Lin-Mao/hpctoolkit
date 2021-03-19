@@ -56,6 +56,7 @@
 #include "lib/profile/sources/packed.hpp"
 #include "lib/profile/sinks/experimentxml4.hpp"
 #include "lib/profile/sinks/hpctracedb2.hpp"
+#include "lib/profile/sinks/intel-advisor.hpp"
 #include "lib/profile/finalizers/denseids.hpp"
 #include "lib/profile/finalizers/directclassification.hpp"
 #include "lib/profile/transformer.hpp"
@@ -169,23 +170,26 @@ int rank0(ProfArgs&& args) {
   // Finally, eventually we get to actually write stuff out.
   std::unique_ptr<SparseDB> sdb;
   switch(args.format) {
-  case ProfArgs::Format::sparse: {
-    std::unique_ptr<sinks::HPCTraceDB2> tdb;
-    if(args.include_traces)
-      tdb = make_unique_x<sinks::HPCTraceDB2>(args.output);
-    sdb = make_unique_x<SparseDB>(args.output, args.threads);
-    auto exml = make_unique_x<sinks::ExperimentXML4>(args.output, args.include_sources,
-                                                     tdb.get());
-    pipelineB << std::move(tdb) << std::move(exml);
-    if(sdb) pipelineB << *sdb;
+    case ProfArgs::Format::sparse: {
+       std::unique_ptr<sinks::HPCTraceDB2> tdb;
+       if(args.include_traces)
+         tdb = make_unique_x<sinks::HPCTraceDB2>(args.output);
+       sdb = make_unique_x<SparseDB>(args.output, args.threads);
+       auto exml = make_unique_x<sinks::ExperimentXML4>(args.output, args.include_sources,
+           tdb.get());
+       pipelineB << std::move(tdb) << std::move(exml);
+       if(sdb) pipelineB << *sdb;
 
-    // ExperimentXML doesn't support instruction-level metrics, so we need a
-    // line-merging transformer. Since this only changes the Scope, we don't
-    // need to track it.
-    if(!args.instructionGrain)
-      pipelineB << make_unique_x<LineMergeTransformer>();
-    break;
-  }
+       // ExperimentXML doesn't support instruction-level metrics, so we need a
+       // line-merging transformer. Since this only changes the Scope, we don't
+       // need to track it.
+       if(!args.instructionGrain)
+         pipelineB << make_unique_x<LineMergeTransformer>();
+       break;
+     } case ProfArgs::Format::intel_advisor: {
+       auto intel_advisor = make_unique_x<sinks::IntelAdvisor>(args.output, args.include_sources);
+       pipelineB << std::move(intel_advisor);
+     }
   }
 
   // Create and drain the Pipeline, that's all we do.

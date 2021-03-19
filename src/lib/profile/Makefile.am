@@ -70,6 +70,20 @@ include $(top_srcdir)/src/Makeinclude.config
 # Local settings
 #############################################################################
 
+if OPT_ENABLE_IGC
+IGC_IFLAGS = @OPT_IGC_IFLAGS@
+IGA_LDFLGS = @OPT_IGC_LDFLAGS@
+endif
+
+if OPT_ENABLE_METRICS_DISCOVERY
+MD_IFLAGS = @OPT_METRICS_DISCOVERY_IFLAGS@
+endif
+
+DYNINST_IFLAGS = @DYNINST_IFLAGS@
+if OPT_DYNINST_LIBDWARF
+DWARF_IFLAGS = -I$(LIBDWARF_INC)
+endif
+
 MYSOURCES = \
 	stdshim/shared_mutex.cpp stdshim/atomic.cpp stdshim/futex-detail.c \
 	\
@@ -82,6 +96,7 @@ MYSOURCES = \
 	sources/hpcrun.cpp sources/packed.cpp sources/hpcrun4.cpp \
 	\
 	sinks/hpctracedb2.cpp sinks/packed.cpp sinks/experimentxml4.cpp \
+	sinks/intel-advisor.cpp \
 	\
 	finalizers/struct.cpp finalizers/directclassification.cpp \
 	finalizers/denseids.cpp
@@ -91,7 +106,8 @@ MYSTANDALONESOURCES = mpi/standalone.cpp
 # GNU binutils flags are needed for HPCLIB_ISA.
 MYCFLAGS   = @HOST_CFLAGS@   $(HPC_IFLAGS) @VALGRIND_IFLAGS@ -I@LIBELF_INC@
 MYCXXFLAGS = @HOST_CXXFLAGS@ $(HPC_IFLAGS) @BOOST_IFLAGS@ @VALGRIND_IFLAGS@ \
-	     @XERCES_IFLAGS@ -I@LIBELF_INC@ -std=gnu++17
+						 $(IGC_IFLAGS) $(MD_IFLAGS)	$(DYNINST_IFLAGS) \
+						 @XERCES_IFLAGS@ -I@LIBELF_INC@ -std=gnu++17
 
 if OPT_ENABLE_OPENMP
 MYCFLAGS += $(OPENMP_FLAG)
@@ -104,7 +120,8 @@ else
   MYAR = $(AR) cru
 endif
 
-MYLIBADD = @HOST_LIBTREPOSITORY@ -L@LIBELF_LIB@ -ldw -lelf
+MYLIBADD = @HOST_LIBTREPOSITORY@ -L@LIBELF_LIB@ -ldw -lelf	\
+					 $(IGA_LDFLGS)
 
 MYCLEAN = @HOST_LIBTREPOSITORY@
 
