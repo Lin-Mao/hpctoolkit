@@ -2,6 +2,7 @@
 #define BANAL_GPU_GPU_BLOCK_H
 
 #include <CFG.h>
+#include "DotCFG.hpp"   // GPUParse
 
 namespace Dyninst {
 namespace ParseAPI {
@@ -9,7 +10,7 @@ namespace ParseAPI {
 class PARSER_EXPORT GPUBlock : public Block {
  public:
   GPUBlock(CodeObject * o, CodeRegion * r, Address start,
-    std::vector<std::pair<Offset, size_t>> &offsets, Architecture arch);
+    std::vector<GPUParse::Inst *> insts, Architecture arch);
 
   virtual ~GPUBlock() {}
 
@@ -18,8 +19,7 @@ class PARSER_EXPORT GPUBlock : public Block {
   virtual Address last() const;
 
  private:
-  // <offset, size> pair
-  std::vector<std::pair<Offset, size_t>> _inst_offsets;
+  std::vector<GPUParse::Inst *> _insts;
   Architecture _arch;
 };
 
