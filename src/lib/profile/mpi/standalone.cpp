@@ -103,11 +103,11 @@ void detail::recv(void*, std::size_t, const Datatype&, std::size_t, std::size_t)
 namespace hpctoolkit::mpi::detail{ 
   struct Win {};
 }
-SharedAccumulator::SharedAccumulator() : atom(0) {};
+SharedAccumulator::SharedAccumulator() = default;
 SharedAccumulator::~SharedAccumulator() = default;
 
-void SharedAccumulator::initialize(std::uint64_t * data) {
-  atom.store(*data, std::memory_order_relaxed);
+void SharedAccumulator::initialize(std::uint64_t data) {
+  atom.store(data, std::memory_order_relaxed);
 }
 
 std::uint64_t SharedAccumulator::fetch_add(std::uint64_t val){

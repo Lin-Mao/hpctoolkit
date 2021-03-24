@@ -277,25 +277,35 @@ namespace hpctoolkit::mpi::detail {
 SharedAccumulator::SharedAccumulator() {}
 
 SharedAccumulator::~SharedAccumulator() {
-  auto l = mpiLock();
-  MPI_Win_free(&(detail->win));
+  if(detail) {
+    auto l = mpiLock();
+    MPI_Win_free(&(detail->win));
+  }
 }
 
-void SharedAccumulator::initialize(std::uint64_t * data) {
-  auto l = mpiLock();
-  MPI_Win win;
-  if(MPI_Win_create(data, sizeof(std::uint64_t), 1, MPI_INFO_NULL, MPI_COMM_WORLD, &win) != MPI_SUCCESS)
-    util::log::fatal{} << "Error while performing an MPI Window Creation!";
-  detail = std::make_unique<detail::Win>(win);
+void SharedAccumulator::initialize(std::uint64_t init) {
+  if(World::size() == 1) {
+    atom.store(init, std::memory_order_relaxed);
+  } else {
+    auto l = mpiLock();
+    MPI_Win win;
+    void* ptr;
+    if(MPI_Win_allocate(sizeof(std::uint64_t), 1, MPI_INFO_NULL, MPI_COMM_WORLD, &ptr, &win) != MPI_SUCCESS)
+      util::log::fatal{} << "Error while performing an MPI Window Creation!";
+    *(std::uint64_t*)ptr = init;
+    MPI_Barrier(MPI_COMM_WORLD);
+    detail = std::make_unique<detail::Win>(win);
+  }
 }
 
 std::uint64_t SharedAccumulator::fetch_add(std::uint64_t val) {
-  auto l = mpiLock();
-  std::uint64_t r;
-
-  MPI_Win_lock(MPI_LOCK_SHARED, 0, 0, detail->win);
-  MPI_Fetch_and_op(&val, &r, MPI_UINT64_T, 0, 0, MPI_SUM, detail->win);
-  MPI_Win_unlock(0, detail->win);
-  
-  return r;
+  if(detail) {
+    std::uint64_t r;
+    auto l = mpiLock();
+    MPI_Win_lock(MPI_LOCK_SHARED, 0, 0, detail->win);
+    MPI_Fetch_and_op(&val, &r, MPI_UINT64_T, 0, 0, MPI_SUM, detail->win);
+    MPI_Win_unlock(0, detail->win);
+    return r;
+  }
+  return atom.fetch_add(val, std::memory_order_relaxed);
 }

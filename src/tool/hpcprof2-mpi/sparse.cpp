@@ -147,7 +147,7 @@ void SparseDB::notifyWavefront(DataClass d) noexcept {
 
   // start the window to keep track of the real file cursor
   fpos += id_tuples_sec_ptr + MULTIPLE_8(id_tuples_sec_size);
-  acc.initialize(&fpos);
+  acc.initialize(fpos);
 
 }
 
