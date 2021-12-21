@@ -111,7 +111,7 @@
 #define NVIDIA_CUDA_REDUNDANCY "gpu=nvidia,redundancy"
 #define NVIDIA_CUDA_DATA_FLOW "gpu=nvidia,data_flow"
 #define NVIDIA_CUDA_VALUE_PATTERN "gpu=nvidia,value_pattern"
-
+#define NVIDIA_CUDA_MEMORY_PROFILE "gpu=nvidia,memory_profile"
 
 /******************************************************************************
  * local variables
@@ -597,6 +597,8 @@ METHOD_FN(process_event_list, int lush_metrics)
       sanitizer_data_flow_analysis_enable();
     } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_VALUE_PATTERN)) {
       sanitizer_value_pattern_analysis_enable();
+    } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_ANALYSIS)) {
+      sanitizer_memory_analysis_enable();
     }
 
     // Register sanitizer callbacks
