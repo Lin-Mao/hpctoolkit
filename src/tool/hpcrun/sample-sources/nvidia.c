@@ -368,7 +368,7 @@ METHOD_FN(supports_event, const char *ev_str)
 #ifndef HPCRUN_STATIC_LINK
   return hpcrun_ev_is(ev_str, NVIDIA_CUDA) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_PC_SAMPLING) ||
     hpcrun_ev_is(ev_str, NVIDIA_CUDA_VALUE_PATTERN) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_DATA_FLOW) ||
-    hpcrun_ev_is(ev_str, NVIDIA_CUDA_REDUNDANCY);
+    hpcrun_ev_is(ev_str, NVIDIA_CUDA_REDUNDANCY) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_MEMORY_PROFILE);
 #else
   return false;
 #endif
@@ -477,7 +477,7 @@ METHOD_FN(process_event_list, int lush_metrics)
     device_finalizer_register(device_finalizer_type_shutdown, 
             &device_trace_finalizer_shutdown);
   } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_REDUNDANCY) || hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_DATA_FLOW) ||
-    hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_VALUE_PATTERN)) {
+    hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_VALUE_PATTERN) || hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_PROFILE)) {
 #ifndef HPCRUN_STATIC_LINK
     if (sanitizer_bind()) {
       EEMSG("hpcrun: unable to bind to NVIDIA SANITIZER library %s\n", dlerror());
@@ -597,8 +597,8 @@ METHOD_FN(process_event_list, int lush_metrics)
       sanitizer_data_flow_analysis_enable();
     } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_VALUE_PATTERN)) {
       sanitizer_value_pattern_analysis_enable();
-    } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_ANALYSIS)) {
-      sanitizer_memory_analysis_enable();
+    } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_PROFILE)) {
+      sanitizer_memory_profile_analysis_enable();
     }
 
     // Register sanitizer callbacks
