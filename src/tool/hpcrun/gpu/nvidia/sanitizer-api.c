@@ -1232,7 +1232,7 @@ sanitizer_kernel_analyze
   }
 }
 
-
+// cbid == SANITIZER_CBID_LAUNCH_END
 static void
 sanitizer_kernel_launch_sync
 (
@@ -1340,6 +1340,7 @@ sanitizer_kernel_launch_sync
   // To ensure previous copies are done
   HPCRUN_SANITIZER_CALL(sanitizerStreamSynchronize, (priority_stream));
 
+// sync will comsume buffer here
   if (!sanitizer_analysis_async) {
     // Empty current buffer
     sanitizer_buffer_channel_t *channel = sanitizer_buffer_channel_get(sanitizer_gpu_patch_type);
@@ -1356,6 +1357,8 @@ sanitizer_kernel_launch_sync
 // callbacks
 //******************************************************************************
 
+
+// cbid == SANITIZER_CBID_LAUNCH_BEGIN
 static void
 sanitizer_kernel_launch_callback
 (
@@ -1840,14 +1843,14 @@ sanitizer_value_pattern_analysis_enable()
 
 // @Lin-Mao: New mode enable in sanitizer-api.c.
 void
-sanitizer_memory_analysis_enable()
+sanitizer_memory_profile_analysis_enable()
 {
-  redshow_anaysis_enable(REDSHOW_ANALYSIS_MEMORY);
+  redshow_analysis_enable(REDSHOW_ANALYSIS_MEMORY_PROFILE);
 
   char dir_name[PATH_MAX];
   output_dir_config(dir_name, "/memory_profile/");
 
-  redshow_output_dir_config(REDSHOW_ANALYSIS_VALUE_PATTERN, dir_name);
+  redshow_output_dir_config(REDSHOW_ANALYSIS_MEMORY_PROFILE, dir_name);
 
   sanitizer_gpu_patch_type = GPU_PATCH_TYPE_ADDRESS_PATCH;
   sanitizer_gpu_patch_record_size = sizeof(gpu_patch_record_address_t);
@@ -2077,7 +2080,7 @@ sanitizer_data_flow_hash_config(int data_flow_hash)
   sanitizer_data_flow_hash = data_flow_hash == 1 ? true : false;
 }
 
-
+// cpu thread end
 void
 sanitizer_device_flush(void *args)
 {
@@ -2100,7 +2103,7 @@ sanitizer_device_flush(void *args)
   }
 }
 
-
+// application end
 void
 sanitizer_device_shutdown(void *args)
 {
