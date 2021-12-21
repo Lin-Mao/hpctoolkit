@@ -14,6 +14,9 @@ void
 sanitizer_value_pattern_analysis_enable();
 
 void
+sanitizer_memory_profile_analysis_enable();
+
+void
 sanitizer_callbacks_subscribe();
 
 void

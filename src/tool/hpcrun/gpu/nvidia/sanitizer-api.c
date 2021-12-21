@@ -1838,6 +1838,24 @@ sanitizer_value_pattern_analysis_enable()
   sanitizer_gpu_patch_record_size = sizeof(gpu_patch_record_t);
 }
 
+// @Lin-Mao: New mode enable in sanitizer-api.c.
+void
+sanitizer_memory_analysis_enable()
+{
+  redshow_anaysis_enable(REDSHOW_ANALYSIS_MEMORY);
+
+  char dir_name[PATH_MAX];
+  output_dir_config(dir_name, "/memory_profile/");
+
+  redshow_output_dir_config(REDSHOW_ANALYSIS_VALUE_PATTERN, dir_name);
+
+  sanitizer_gpu_patch_type = GPU_PATCH_TYPE_ADDRESS_PATCH;
+  sanitizer_gpu_patch_record_size = sizeof(gpu_patch_record_address_t);
+  sanitizer_gpu_analysis_type = GPU_PATCH_TYPE_ADDRESS_ANALYSIS;
+  sanitizer_gpu_analysis_record_size = sizeof(gpu_patch_analysis_address_t);
+
+}
+
 
 void
 sanitizer_callbacks_subscribe() 
