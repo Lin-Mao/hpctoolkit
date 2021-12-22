@@ -79,6 +79,7 @@ MYSOURCES = \
 	CallPath-MetricComponentsFact.hpp CallPath-MetricComponentsFact.cpp \
 	CallPath-CudaCFG.hpp CallPath-CudaCFG.cpp \
 	CallPath-DataFlow.hpp CallPath-DataFlow.cpp \
+	CallPath-MemoryProfile.hpp CallPath-MemoryProfile.cpp \
 	advisor/GPUAdvisor.hpp advisor/GPUAdvisor-Blame.cpp \
   advisor/GPUAdvisor-Advise.cpp advisor/GPUAdvisor-Init.cpp \
 	advisor/GPUOptimizer.hpp advisor/GPUOptimizer.cpp \
