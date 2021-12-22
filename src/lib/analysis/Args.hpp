@@ -146,6 +146,8 @@ public:
   std::vector<std::string> dataFlowFiles;
   std::vector<std::string> redundancyFiles;
   std::vector<std::string> valuePatternFiles;
+  // added for memory profile
+  std::vector<std::string> memoryProfileFiles;
 
   bool doNormalizeTy;
 

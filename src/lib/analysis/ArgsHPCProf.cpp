@@ -496,6 +496,12 @@ ArgsHPCProf::parse(int argc, const char* const argv[], AppType type)
         find_files(dataFlowFiles, data_flow_dir, ".dot");
       }
 
+      // added for memory profile
+      const std::string memory_profile_dir = profileFiles[i] + "/memory_profile";
+      if (is_directory(memory_profile_dir)) {
+        find_files(memoryProfileFiles, memory_profile_dir, ".csv");
+      }
+
       const std::string redundancy_dir = profileFiles[i] + "/redundancy";
       if (is_directory(redundancy_dir)) {
         find_files(redundancyFiles, redundancy_dir, ".csv");

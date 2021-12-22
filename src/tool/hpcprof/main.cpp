@@ -76,6 +76,7 @@ using std::string;
 
 #include <lib/analysis/CallPath-CudaCFG.hpp>
 #include <lib/analysis/CallPath-DataFlow.hpp>
+#include <lib/analysis/CallPath-MemoryProfile.hpp>
 #include <lib/analysis/advisor/GPUInstruction.hpp>
 #include <lib/analysis/CallPath.hpp>
 #include <lib/analysis/Util.hpp>
@@ -212,6 +213,9 @@ realmain(int argc, char* const* argv)
 						 args.doNormalizeTy, printProgress);
 
   Analysis::CallPath::analyzeDataFlowMain(*prof, args.dataFlowFiles);
+
+  Analysis::CallPath::analyzeMemoryProfileMain(*prof, args.memoryProfileFiles);
+
 
   // Do not transform CFG in this sanitizer
   //Analysis::CallPath::transformCudaCFGMain(*prof);
