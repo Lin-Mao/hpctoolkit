@@ -16,6 +16,10 @@ sanitizer_value_pattern_analysis_enable();
 void
 sanitizer_memory_profile_analysis_enable();
 
+// for sub-allocation callback
+void
+memory_sub_alloc_callback (void *ptr, size_t size);
+
 void
 sanitizer_callbacks_subscribe();
 

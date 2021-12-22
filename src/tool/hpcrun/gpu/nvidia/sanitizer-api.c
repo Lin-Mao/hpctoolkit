@@ -860,6 +860,7 @@ sanitizer_buffer_init
 }
 
 
+// case == SANITIZER_CBID_RESOURCE_MODULE_LOADED
 static void
 sanitizer_load_callback
 (
@@ -1054,6 +1055,7 @@ sanitizer_module_load
 }
 
 
+// cbid == SANITIZER_CBID_LAUNCH_AFTER_SYSCALL_SETUP
 static void
 sanitizer_kernel_launch
 (
@@ -1357,6 +1359,21 @@ sanitizer_kernel_launch_sync
 // callbacks
 //******************************************************************************
 
+// add for sub-allocation callback in memory profile
+void memory_sub_alloc_callback (void *ptr, size_t size) {
+    
+    uint64_t correlation_id = gpu_correlation_id();
+    cct_node_t *api_node = sanitizer_correlation_callback(correlation_id, 0);
+    hpcrun_cct_retain(api_node);
+
+    int32_t persistent_id = hpcrun_cct_persistent_id(api_node);
+
+    redshow_sub_memory_register(persistent_id, correlation_id, ptr, ptr + size);
+
+    PRINT("Sanitizer-> Sub-allocte memory address %p, size %zu, op %lu, id %d\n",
+        ptr, size, correlation_id, persistent_id);
+        
+}
 
 // cbid == SANITIZER_CBID_LAUNCH_BEGIN
 static void
