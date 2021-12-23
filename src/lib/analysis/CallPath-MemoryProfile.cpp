@@ -128,19 +128,19 @@ typedef std::map<int, CTX_NODE> CTX_NODE_MAP;
 
 static void read_memory_node(const std::string &file_name, CTX_NODE_MAP &ctx_node_map) {
   std::ifstream file(file_name);
-  std::string line;
+  std::string word;
   bool flag = false;
 
-  while (getline(file, line)) {
+  while (file >> word) {
     // std::cout << line << std::endl;
     if (flag) {
-      int cid = stoi(line);
-      CTX_NODE node(cid);
-      ctx_node_map.emplace(cid, node);
+      int ctxid = std::stoi(word);
+      CTX_NODE node(ctxid);
+      ctx_node_map.emplace(ctxid, node);
       flag = false; 
     }
 
-    if (line == "ctx_id") {
+    if (word == "memory_id") {
       // std::cout << line << std::endl;
       flag = true;
     }
@@ -328,7 +328,7 @@ static void matchCCTNode(Prof::CallPath::CCTIdToCCTNodeMap &cctNodeMap, CTX_NODE
 static void outputContext(const std::string &file_name, const CTX_NODE_MAP &ctx_node_map) {
   std::ofstream out(file_name + ".context");
   for (auto iter : ctx_node_map) {
-    out << iter.first << std::endl;
+    out << "memory_id " << iter.first << std::endl;
     out << iter.second.context << std::endl;
   }
 
