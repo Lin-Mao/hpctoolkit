@@ -112,6 +112,7 @@
 #define NVIDIA_CUDA_DATA_FLOW "gpu=nvidia,data_flow"
 #define NVIDIA_CUDA_VALUE_PATTERN "gpu=nvidia,value_pattern"
 #define NVIDIA_CUDA_MEMORY_PROFILE "gpu=nvidia,memory_profile"
+#define NVIDIA_CUDA_MEMORY_HEATMAP "gpu=nvidia,memory_heatmap"
 
 /******************************************************************************
  * local variables
@@ -368,7 +369,8 @@ METHOD_FN(supports_event, const char *ev_str)
 #ifndef HPCRUN_STATIC_LINK
   return hpcrun_ev_is(ev_str, NVIDIA_CUDA) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_PC_SAMPLING) ||
     hpcrun_ev_is(ev_str, NVIDIA_CUDA_VALUE_PATTERN) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_DATA_FLOW) ||
-    hpcrun_ev_is(ev_str, NVIDIA_CUDA_REDUNDANCY) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_MEMORY_PROFILE);
+    hpcrun_ev_is(ev_str, NVIDIA_CUDA_REDUNDANCY) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_MEMORY_PROFILE) ||
+    hpcrun_ev_is(ev_str, NVIDIA_CUDA_MEMORY_HEATMAP);
 #else
   return false;
 #endif
@@ -477,7 +479,8 @@ METHOD_FN(process_event_list, int lush_metrics)
     device_finalizer_register(device_finalizer_type_shutdown, 
             &device_trace_finalizer_shutdown);
   } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_REDUNDANCY) || hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_DATA_FLOW) ||
-    hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_VALUE_PATTERN) || hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_PROFILE)) {
+    hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_VALUE_PATTERN) || hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_PROFILE) ||
+    hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_HEATMAP)) {
 #ifndef HPCRUN_STATIC_LINK
     if (sanitizer_bind()) {
       EEMSG("hpcrun: unable to bind to NVIDIA SANITIZER library %s\n", dlerror());
@@ -599,6 +602,8 @@ METHOD_FN(process_event_list, int lush_metrics)
       sanitizer_value_pattern_analysis_enable();
     } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_PROFILE)) {
       sanitizer_memory_profile_analysis_enable();
+    } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_HEATMAP)) {
+      sanitizer_memory_heatmap_analysis_enable();
     }
 
     // Register sanitizer callbacks
