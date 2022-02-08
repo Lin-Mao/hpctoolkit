@@ -106,8 +106,6 @@ using std::string;
 #include <queue>
 #include <iostream>
 
-#include <boost/graph/graphviz.hpp>
-#include <boost/graph/detail/read_graphviz_new.hpp>
 #include "redshow_graphviz.h"
 
 namespace Analysis {
@@ -117,32 +115,62 @@ namespace CallPath {
 struct CTX_NODE{
   int32_t ctx_id;
   std::string context;
+  std::string type;
+  uint64_t count; // invocation counts // for memory is access kernel counts
 
   CTX_NODE() = default;
 
-  CTX_NODE(int32_t cid) : ctx_id(cid), context("") {}
+  CTX_NODE(int32_t cid) : ctx_id(cid), context(""), type(""), count(0) {}
 };
 
-typedef std::map<int, CTX_NODE> CTX_NODE_MAP;
+typedef std::map<int32_t, CTX_NODE> CTX_NODE_MAP;
 
 
 static void read_memory_node(const std::string &file_name, CTX_NODE_MAP &ctx_node_map) {
   std::ifstream file(file_name);
   std::string word;
-  bool flag = false;
+  bool memory_flag = false;
+  bool kernel_flag = false;
 
   while (file >> word) {
-    // std::cout << line << std::endl;
-    if (flag) {
-      int ctxid = std::stoi(word);
-      CTX_NODE node(ctxid);
-      ctx_node_map.emplace(ctxid, node);
-      flag = false; 
+    // std::cout << "word: " << word << std::endl;
+    
+    if (memory_flag) {
+      int32_t cid = std::stoi(word);
+      auto memory_node = ctx_node_map.find(cid);
+      if (memory_node == ctx_node_map.end()) {
+        CTX_NODE node(cid);
+        node.type = "Malloc";
+        node.count++;
+        ctx_node_map.emplace(cid, node);
+        memory_flag = false; 
+      } else {
+        memory_node->second.count++;
+        memory_flag = false;
+      }
+    }
+    if (word == "memory_id") { // this if-clause should after previous if-clause
+      memory_flag = true;
     }
 
-    if (word == "memory_id") {
-      // std::cout << line << std::endl;
-      flag = true;
+
+    if (kernel_flag) {
+      int32_t cid = std::stoi(word);
+      auto kernel_node = ctx_node_map.find(cid);
+      if (kernel_node == ctx_node_map.end()) {
+        CTX_NODE node(cid);
+        node.type = "Kernel";
+        node.count++;
+        ctx_node_map.emplace(cid, node);
+        kernel_flag = false; 
+      } else {
+        kernel_node->second.count++;
+        kernel_flag = false;
+      }
+      
+    }
+    if (word == "kernel_id") {
+      kernel_flag = true;
     }
 
   }
@@ -328,7 +356,8 @@ static void matchCCTNode(Prof::CallPath::CCTIdToCCTNodeMap &cctNodeMap, CTX_NODE
 static void outputContext(const std::string &file_name, const CTX_NODE_MAP &ctx_node_map) {
   std::ofstream out(file_name + ".context");
   for (auto iter : ctx_node_map) {
-    out << "memory_id " << iter.first << std::endl;
+    out << iter.first << "  " << iter.second.type << "  " \
+        << iter.second.count << " counts"<< std::endl;
     out << iter.second.context << std::endl;
   }
 
