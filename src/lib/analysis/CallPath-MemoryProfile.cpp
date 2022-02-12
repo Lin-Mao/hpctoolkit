@@ -131,6 +131,7 @@ static void read_memory_node(const std::string &file_name, CTX_NODE_MAP &ctx_nod
   std::string word;
   bool memory_flag = false;
   bool kernel_flag = false;
+  bool free_flag = false;
 
   while (file >> word) {
     // std::cout << "word: " << word << std::endl;
@@ -171,6 +172,25 @@ static void read_memory_node(const std::string &file_name, CTX_NODE_MAP &ctx_nod
     }
     if (word == "kernel_id") {
       kernel_flag = true;
+    }
+
+    if (free_flag) {
+      int32_t cid = std::stoi(word);
+      auto kernel_node = ctx_node_map.find(cid);
+      if (kernel_node == ctx_node_map.end()) {
+        CTX_NODE node(cid);
+        node.type = "Free";
+        node.count++;
+        ctx_node_map.emplace(cid, node);
+        free_flag = false; 
+      } else {
+        kernel_node->second.count++;
+        free_flag = false;
+      }
+      
+    }
+    if (word == "free_id") {
+      free_flag = true;
     }
 
   }
