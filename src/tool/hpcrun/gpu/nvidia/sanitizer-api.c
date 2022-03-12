@@ -1909,6 +1909,22 @@ sanitizer_memory_heatmap_analysis_enable()
 
 }
 
+void
+sanitizer_memory_liveness_analysis_enable()
+{
+  redshow_analysis_enable(REDSHOW_ANALYSIS_MEMORY_LIVENESS);
+
+  char dir_name[PATH_MAX];
+  output_dir_config(dir_name, "/memory_liveness/");
+
+  redshow_output_dir_config(REDSHOW_ANALYSIS_MEMORY_LIVENESS, dir_name);
+
+  sanitizer_gpu_patch_type = GPU_PATCH_TYPE_ADDRESS_PATCH;
+  sanitizer_gpu_patch_record_size = sizeof(gpu_patch_record_address_t);
+  sanitizer_gpu_analysis_type = GPU_PATCH_TYPE_ADDRESS_ANALYSIS;
+  sanitizer_gpu_analysis_record_size = sizeof(gpu_patch_analysis_address_t);
+
+}
 
 void
 sanitizer_callbacks_subscribe() 
