@@ -194,6 +194,7 @@ static void read_memory_node(const std::string &file_name, CTX_NODE_MAP &ctx_nod
     }
 
   }
+  file.close();
 
 }
 
@@ -377,7 +378,7 @@ static void outputContext(const std::string &file_name, const CTX_NODE_MAP &ctx_
   std::ofstream out(file_name + ".context");
   for (auto iter : ctx_node_map) {
     out << iter.first << "  " << iter.second.type << "  " \
-        << iter.second.count << " counts"<< std::endl;
+        << iter.second.count << " count(s)"<< std::endl;
     out << iter.second.context << std::endl;
   }
 
