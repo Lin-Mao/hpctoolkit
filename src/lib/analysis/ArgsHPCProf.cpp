@@ -502,6 +502,12 @@ ArgsHPCProf::parse(int argc, const char* const argv[], AppType type)
         find_files(memoryProfileFiles, memory_profile_dir, ".csv");
       }
 
+      // for liveness
+      const std::string memory_liveness_dir = profileFiles[i] + "/memory_liveness";
+      if (is_directory(memory_liveness_dir)) {
+        find_files(memoryLivenessFiles, memory_liveness_dir, ".csv");
+      }
+
       const std::string redundancy_dir = profileFiles[i] + "/redundancy";
       if (is_directory(redundancy_dir)) {
         find_files(redundancyFiles, redundancy_dir, ".csv");

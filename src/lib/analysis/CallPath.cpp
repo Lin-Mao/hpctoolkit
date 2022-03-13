@@ -1250,6 +1250,7 @@ makeDatabase(Prof::CallPath::Profile& prof, const Analysis::Args& args)
 
   moveFiles(args.dataFlowFiles);
   moveFiles(args.memoryProfileFiles);
+  moveFiles(args.memoryLivenessFiles);
   moveFiles(args.redundancyFiles);
   moveFiles(args.valuePatternFiles);
 }
