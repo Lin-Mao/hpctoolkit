@@ -131,10 +131,10 @@ static bool proces_memory_node(CTX_NODE_MAP &ctx_node_map, int32_t cid, std::str
   if (memory_node == ctx_node_map.end()) {
     CTX_NODE node(cid);
     node.type = ctx_type;
-    // node.count++;
+    node.count++;
     ctx_node_map.emplace(cid, node);
   } else {
-    // memory_node->second.count++;
+    memory_node->second.count++;
   }
 
   return false;
@@ -387,9 +387,9 @@ static void matchCCTNode(Prof::CallPath::CCTIdToCCTNodeMap &cctNodeMap, CTX_NODE
 static void outputContext(const std::string &file_name, const CTX_NODE_MAP &ctx_node_map) {
   std::ofstream out(file_name + ".context");
   for (auto iter : ctx_node_map) {
-    // out << "ctx_id: " << iter.first << "  " << iter.second.type << "  " \
-    //     << iter.second.count << " count(s)"<< std::endl;
-    out << iter.first << "  " << iter.second.type << std::endl;
+    out << iter.first << "  " << iter.second.type << "  " \
+        << iter.second.count << " count(s)"<< std::endl;
+    // out << iter.first << "  " << iter.second.type << std::endl;
     out << iter.second.context << std::endl;
   }
 
