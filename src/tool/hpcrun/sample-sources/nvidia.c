@@ -164,6 +164,8 @@ static const int DEFAULT_GPU_ANALYSIS_BLOCKS = 0;
 static const int DEFAULT_READ_TRACE_IGNORE = 0;
 // 0: no hashing
 static const int DEFAULT_DATA_FLOW_HASH = 0;
+// 0: liveness analysis on CPU
+static const int DEFAULT_LIVENESS_ONGPU = 0;
 
 //******************************************************************************
 // constants
@@ -513,6 +515,8 @@ METHOD_FN(process_event_list, int lush_metrics)
 
     int data_flow_hash = control_knob_value_get_int(HPCRUN_SANITIZER_DATA_FLOW_HASH);
 
+    int liveness_ongpu = control_knob_value_get_int(HPCRUN_SANITIZER_LIVENESS_ONGPU);
+
     kernel_sampling_frequency = control_knob_value_get_int(HPCRUN_SANITIZER_KERNEL_SAMPLING_FREQUENCY);
 
     char *data_type = control_knob_value_get(HPCRUN_SANITIZER_DEFAULT_TYPE);
@@ -557,6 +561,10 @@ METHOD_FN(process_event_list, int lush_metrics)
       data_flow_hash = DEFAULT_DATA_FLOW_HASH;
     }
 
+    if (liveness_ongpu == 0) {
+      liveness_ongpu = DEFAULT_LIVENESS_ONGPU;
+    }
+
     PRINT("gpu_patch_record_num %d\n", gpu_patch_record_num);
     PRINT("buffer_pool_size %d\n", buffer_pool_size);
     PRINT("approx_level %d\n", approx_level);
@@ -579,6 +587,8 @@ METHOD_FN(process_event_list, int lush_metrics)
     sanitizer_read_trace_ignore_config(read_trace_ignore);
 
     sanitizer_data_flow_hash_config(data_flow_hash);
+
+    sanitizer_liveness_ongpu_config(liveness_ongpu);
 
     // Init random number generator
     srand(time(0));

@@ -237,7 +237,7 @@ static uint32_t sanitizer_gpu_analysis_blocks = 0;
 static uint32_t sanitizer_gpu_analysis_type = GPU_PATCH_TYPE_ADDRESS_ANALYSIS;
 static bool sanitizer_read_trace_ignore = false;
 static bool sanitizer_data_flow_hash = false;
-static bool sanitizer_liveness_ongpu = true;
+static bool sanitizer_liveness_ongpu = false;
 
 static __thread bool sanitizer_stop_flag = false;
 static __thread bool sanitizer_context_creation_flag = false;
@@ -2226,6 +2226,12 @@ void
 sanitizer_data_flow_hash_config(int data_flow_hash)
 {
   sanitizer_data_flow_hash = data_flow_hash == 1 ? true : false;
+}
+
+void
+sanitizer_liveness_ongpu_config(int liveness_ongpu)
+{
+  sanitizer_liveness_ongpu = liveness_ongpu == 1 ? true : false;
 }
 
 // cpu thread end
