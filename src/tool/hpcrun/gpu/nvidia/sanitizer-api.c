@@ -238,6 +238,7 @@ static uint32_t sanitizer_gpu_analysis_type = GPU_PATCH_TYPE_ADDRESS_ANALYSIS;
 static bool sanitizer_read_trace_ignore = false;
 static bool sanitizer_data_flow_hash = false;
 static bool sanitizer_liveness_ongpu = false;
+static bool sanitizer_torch_analysis = false;
 
 static __thread bool sanitizer_stop_flag = false;
 static __thread bool sanitizer_context_creation_flag = false;
@@ -2013,9 +2014,11 @@ sanitizer_callbacks_subscribe()
 
   redshow_record_data_callback_register(sanitizer_record_data_callback, sanitizer_pc_views, sanitizer_mem_views);
 
-  // redshow_torch_enable();
+  if (sanitizer_torch_analysis) {
+    redshow_torch_enable();
 
-  // redshow_get_op_id_register(gpu_correlation_id);
+    redshow_get_op_id_register(gpu_correlation_id);
+  }
 
   redshow_tool_dtoh_register(sanitizer_dtoh);
 
@@ -2232,6 +2235,12 @@ void
 sanitizer_liveness_ongpu_config(int liveness_ongpu)
 {
   sanitizer_liveness_ongpu = liveness_ongpu == 1 ? true : false;
+}
+
+void
+sanitizer_torch_analysis_config(int torch_analysis)
+{
+  sanitizer_torch_analysis = torch_analysis == 1 ? true : false;
 }
 
 // cpu thread end
