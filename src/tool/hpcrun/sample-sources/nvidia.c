@@ -169,6 +169,8 @@ static const int DEFAULT_LIVENESS_ONGPU = 0;
 // 0: disable torch analysis
 static const int DEFAULT_TORCH_ANALYSIS = 0;
 
+static const int DEFAULT_TORCH_ANALYSIS_ONGPU = 0;
+
 //******************************************************************************
 // constants
 //******************************************************************************
@@ -521,6 +523,8 @@ METHOD_FN(process_event_list, int lush_metrics)
 
     int torch_analysis = control_knob_value_get_int(HPCRUN_SANITIZER_TORCH_ANALYSIS);
 
+    int torch_ongpu = control_knob_value_get_int(HPCRUN_SANITIZER_TORCH_ANALYSIS_ONGPU);
+
     kernel_sampling_frequency = control_knob_value_get_int(HPCRUN_SANITIZER_KERNEL_SAMPLING_FREQUENCY);
 
     char *data_type = control_knob_value_get(HPCRUN_SANITIZER_DEFAULT_TYPE);
@@ -573,6 +577,10 @@ METHOD_FN(process_event_list, int lush_metrics)
       torch_analysis = DEFAULT_TORCH_ANALYSIS;
     }
 
+    if (torch_ongpu == 0) {
+      torch_ongpu = DEFAULT_TORCH_ANALYSIS_ONGPU;
+    }
+
     PRINT("gpu_patch_record_num %d\n", gpu_patch_record_num);
     PRINT("buffer_pool_size %d\n", buffer_pool_size);
     PRINT("approx_level %d\n", approx_level);
@@ -599,6 +607,8 @@ METHOD_FN(process_event_list, int lush_metrics)
     sanitizer_liveness_ongpu_config(liveness_ongpu);
 
     sanitizer_torch_analysis_config(torch_analysis);
+
+    sanitizer_torch_analysis_config(torch_ongpu);
 
     // Init random number generator
     srand(time(0));

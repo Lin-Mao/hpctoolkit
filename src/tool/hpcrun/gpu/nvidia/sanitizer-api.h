@@ -83,6 +83,9 @@ sanitizer_liveness_ongpu_config(int liveness_ongpu);
 void
 sanitizer_torch_analysis_config(int torch_analysis);
 
+void
+sanitizer_torch_analysis_ongpu_config(int torch_analysis);
+
 size_t
 sanitizer_gpu_patch_record_num_get();
 
