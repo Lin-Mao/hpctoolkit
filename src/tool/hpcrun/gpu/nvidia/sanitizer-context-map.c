@@ -36,10 +36,12 @@ struct sanitizer_context_map_entry_s {
   gpu_patch_buffer_t *buffer_addr_read_device;
   gpu_patch_buffer_t *buffer_addr_write_device;
   gpu_patch_aux_address_dict_t *aux_addr_dict_device;
+  gpu_patch_aux_address_dict_t *torch_aux_addr_dict_device;
   gpu_patch_buffer_t *buffer_reset;
   gpu_patch_buffer_t *buffer_addr_read_reset;
   gpu_patch_buffer_t *buffer_addr_write_reset;
   gpu_patch_aux_address_dict_t *aux_addr_dict_reset;
+  gpu_patch_aux_address_dict_t *torch_aux_addr_dict_reset;
   struct sanitizer_context_map_entry_s *left;
   struct sanitizer_context_map_entry_s *right;
 }; 
@@ -75,10 +77,12 @@ sanitizer_context_map_entry_new(CUcontext context)
   e->buffer_addr_read_device = NULL;
   e->buffer_addr_write_device = NULL;
   e->aux_addr_dict_device = NULL;
+  e->torch_aux_addr_dict_device = NULL;
   e->buffer_reset = NULL;
   e->buffer_addr_read_reset = NULL;
   e->buffer_addr_write_reset = NULL;
   e->aux_addr_dict_reset = NULL;
+  e->torch_aux_addr_dict_reset = NULL;
 
   atomic_store(&e->lock_thread, -1);
 
@@ -353,6 +357,22 @@ sanitizer_context_map_aux_addr_dict_device_update
   spinlock_unlock(&sanitizer_context_map_lock);
 }
 
+void
+sanitizer_context_map_torch_torch_aux_addr_dict_device_update
+(
+ CUcontext context,
+ gpu_patch_aux_address_dict_t *torch_aux_addr_dict_device
+)
+{
+  spinlock_lock(&sanitizer_context_map_lock);
+
+  sanitizer_context_map_entry_t *result = sanitizer_context_map_lookup_internal(context);
+
+  result->torch_aux_addr_dict_device = torch_aux_addr_dict_device;
+
+  spinlock_unlock(&sanitizer_context_map_lock);
+}
+
 
 void
 sanitizer_context_map_buffer_addr_write_device_update
@@ -417,6 +437,23 @@ sanitizer_context_map_aux_addr_dict_reset_update
   sanitizer_context_map_entry_t *result = sanitizer_context_map_lookup_internal(context);
 
   result->aux_addr_dict_reset = aux_addr_dict_reset;
+
+  spinlock_unlock(&sanitizer_context_map_lock);
+}
+
+
+void
+sanitizer_context_map_torch_aux_addr_dict_reset_update
+(
+ CUcontext context,
+ gpu_patch_aux_address_dict_t *torch_aux_addr_dict_reset
+)
+{
+  spinlock_lock(&sanitizer_context_map_lock);
+
+  sanitizer_context_map_entry_t *result = sanitizer_context_map_lookup_internal(context);
+
+  result->torch_aux_addr_dict_reset = torch_aux_addr_dict_reset;
 
   spinlock_unlock(&sanitizer_context_map_lock);
 }
@@ -577,6 +614,16 @@ sanitizer_context_map_entry_aux_addr_dict_device_get
 }
 
 
+gpu_patch_aux_address_dict_t *
+sanitizer_context_map_entry_torch_aux_addr_dict_device_get
+(
+ sanitizer_context_map_entry_t *entry
+)
+{
+  return entry->torch_aux_addr_dict_device;
+}
+
+
 gpu_patch_buffer_t *
 sanitizer_context_map_entry_buffer_reset_get
 (
@@ -614,4 +661,13 @@ sanitizer_context_map_entry_aux_addr_dict_reset_get
 )
 {
   return entry->aux_addr_dict_reset;
+}
+
+gpu_patch_aux_address_dict_t *
+sanitizer_context_map_entry_torch_aux_addr_dict_reset_get
+(
+ sanitizer_context_map_entry_t *entry
+)
+{
+  return entry->torch_aux_addr_dict_reset;
 }

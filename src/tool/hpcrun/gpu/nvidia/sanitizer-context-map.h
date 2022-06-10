@@ -165,6 +165,13 @@ sanitizer_context_map_aux_addr_dict_device_update
  gpu_patch_aux_address_dict_t *aux_addr_dict_device
 );
 
+void
+sanitizer_context_map_torch_aux_addr_dict_device_update
+(
+ CUcontext context,
+ gpu_patch_aux_address_dict_t *torch_aux_addr_dict_device
+);
+
 
 void
 sanitizer_context_map_buffer_reset_update
@@ -195,6 +202,13 @@ sanitizer_context_map_aux_addr_dict_reset_update
 (
  CUcontext context,
  gpu_patch_aux_address_dict_t *aux_addr_dict_reset
+);
+
+void
+sanitizer_context_map_torch_aux_addr_dict_reset_update
+(
+ CUcontext context,
+ gpu_patch_aux_address_dict_t *torch_aux_addr_dict_reset
 );
 
 
@@ -253,6 +267,11 @@ sanitizer_context_map_entry_aux_addr_dict_device_get
  sanitizer_context_map_entry_t *entry
 );
 
+gpu_patch_aux_address_dict_t *
+sanitizer_context_map_entry_torch_aux_addr_dict_device_get
+(
+ sanitizer_context_map_entry_t *entry
+);
 
 gpu_patch_buffer_t *
 sanitizer_context_map_entry_buffer_reset_get
@@ -277,6 +296,12 @@ sanitizer_context_map_entry_buffer_addr_write_reset_get
 
 gpu_patch_aux_address_dict_t *
 sanitizer_context_map_entry_aux_addr_dict_reset_get
+(
+ sanitizer_context_map_entry_t *entry
+);
+
+gpu_patch_aux_address_dict_t *
+sanitizer_context_map_entry_torch_aux_addr_dict_reset_get
 (
  sanitizer_context_map_entry_t *entry
 );
