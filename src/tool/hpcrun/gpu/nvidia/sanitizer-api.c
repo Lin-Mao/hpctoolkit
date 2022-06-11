@@ -1409,7 +1409,7 @@ sanitizer_kernel_launch_sync
     // Reserve for debugging correctness
     //PRINT("num_records %zu\n", num_records);
 
-    if (sanitizer_gpu_analysis_blocks == 0) {
+    if (sanitizer_gpu_analysis_blocks == 0 && !sanitizer_torch_analysis_ongpu && !sanitizer_liveness_ongpu) {
       buffer_analyze(persistent_id, correlation_id, cubin_id, mod_id, sanitizer_gpu_patch_type,
         sanitizer_gpu_patch_record_size, sanitizer_gpu_patch_buffer_host,
         sanitizer_gpu_patch_buffer_device, priority_stream);
