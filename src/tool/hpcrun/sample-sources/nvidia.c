@@ -608,7 +608,7 @@ METHOD_FN(process_event_list, int lush_metrics)
 
     sanitizer_torch_analysis_config(torch_analysis);
 
-    sanitizer_torch_analysis_config(torch_ongpu);
+    sanitizer_torch_analysis_ongpu_config(torch_ongpu);
 
     // Init random number generator
     srand(time(0));

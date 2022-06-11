@@ -358,7 +358,7 @@ sanitizer_context_map_aux_addr_dict_device_update
 }
 
 void
-sanitizer_context_map_torch_torch_aux_addr_dict_device_update
+sanitizer_context_map_torch_aux_addr_dict_device_update
 (
  CUcontext context,
  gpu_patch_aux_address_dict_t *torch_aux_addr_dict_device
