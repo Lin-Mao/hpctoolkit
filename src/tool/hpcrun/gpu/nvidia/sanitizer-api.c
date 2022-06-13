@@ -1410,17 +1410,11 @@ sanitizer_kernel_launch_sync
     //PRINT("num_records %zu\n", num_records);
 
     if (sanitizer_gpu_analysis_blocks == 0) {
-      if (!sanitizer_torch_analysis_ongpu && !sanitizer_liveness_ongpu){
-        buffer_analyze(persistent_id, correlation_id, cubin_id, mod_id, sanitizer_gpu_patch_type,
-          sanitizer_gpu_patch_record_size, sanitizer_gpu_patch_buffer_host,
-          sanitizer_gpu_patch_buffer_device, priority_stream);
+      buffer_analyze(persistent_id, correlation_id, cubin_id, mod_id, sanitizer_gpu_patch_type,
+        sanitizer_gpu_patch_record_size, sanitizer_gpu_patch_buffer_host,
+        sanitizer_gpu_patch_buffer_device, priority_stream);
 
-        PRINT("Sanitizer-> analysis cpu in process\n");
-      } else {
-        sanitizer_gpu_patch_buffer_host->full = 0;
-        HPCRUN_SANITIZER_CALL(sanitizerMemcpyHostToDeviceAsync, (sanitizer_gpu_patch_buffer_device,\
-          sanitizer_gpu_patch_buffer_host, sizeof(sanitizer_gpu_patch_buffer_host->full), priority_stream));
-      }
+      PRINT("Sanitizer-> analysis cpu in process\n");
     }
 
     // Awake background thread
