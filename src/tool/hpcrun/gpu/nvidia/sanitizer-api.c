@@ -1391,7 +1391,7 @@ sanitizer_kernel_launch_sync
     HPCRUN_SANITIZER_CALL(sanitizerMemcpyDeviceToHost,
       (sanitizer_gpu_patch_buffer_host, sanitizer_gpu_patch_buffer_device, sizeof(gpu_patch_buffer_t), priority_stream));
 
-    size_t num_records = sanitizer_gpu_patch_buffer_host->head_index;
+    // size_t num_records = sanitizer_gpu_patch_buffer_host->head_index;
 
     // Reserve for debugging correctness
     //PRINT("head_index %u, tail_index %u, num_left_threads %u expected %zu\n",
@@ -1407,7 +1407,7 @@ sanitizer_kernel_launch_sync
     }
 
     // Reserve for debugging correctness
-    //PRINT("num_records %zu\n", num_records);
+    // PRINT("num_records %zu\n", num_records);
 
     if (sanitizer_gpu_analysis_blocks == 0) {
       buffer_analyze(persistent_id, correlation_id, cubin_id, mod_id, sanitizer_gpu_patch_type,
@@ -1463,7 +1463,8 @@ sanitizer_kernel_launch_sync
 //******************************************************************************
 
 // add for sub-allocation callback in memory profile
-void memory_sub_alloc_callback (void *ptr, size_t size) {
+// @Lin-Mao: never used, can be deleted
+void memory_suballoc_callback (void *ptr, size_t size) {
     
     uint64_t correlation_id = gpu_correlation_id();
     cct_node_t *api_node = sanitizer_correlation_callback(correlation_id, 0);
@@ -1471,7 +1472,7 @@ void memory_sub_alloc_callback (void *ptr, size_t size) {
 
     int32_t persistent_id = hpcrun_cct_persistent_id(api_node);
 
-    redshow_sub_memory_register(persistent_id, correlation_id, ptr, ptr + size);
+    // redshow_sub_memory_register(persistent_id, correlation_id, ptr, ptr + size);
 
     PRINT("Sanitizer-> Sub-allocte memory address %p, size %zu, op %lu, id %d\n",
         ptr, size, correlation_id, persistent_id);
