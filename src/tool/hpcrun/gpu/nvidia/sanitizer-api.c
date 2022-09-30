@@ -496,6 +496,7 @@ sanitizer_stearm_id_query
 {
   uint32_t stream_id;
   if (stream_to_integer_linkedlist == NULL) {
+    // @Lin-Mao: no need to free when using hpcrun_malloc_safe?
     stream_to_integer_linkedlist = (stream_to_integer_t*) hpcrun_malloc_safe(sizeof(stream_to_integer_t));
     stream_to_integer_linkedlist->stream = stream;
     stream_to_integer_linkedlist->stream_id = 0;
@@ -527,18 +528,6 @@ sanitizer_stearm_id_query
     }
   }
   return stream_id;
-
-}
-
-static void
-sanitizer_destroy_stream_to_integer_linkedlist() {
-  stream_to_integer_t* p = stream_to_integer_linkedlist;
-  stream_to_integer_t* q;
-  while (p) {
-    q = p;
-    p = p->next;
-    free(q);
-  }
 
 }
 
@@ -2438,8 +2427,6 @@ sanitizer_device_shutdown(void *args)
 
   // Attribute performance metrics to CCTs
   redshow_flush();
-
-  sanitizer_destroy_stream_to_integer_linkedlist();
   while (atomic_load(&sanitizer_process_thread_counter));
 }
 
