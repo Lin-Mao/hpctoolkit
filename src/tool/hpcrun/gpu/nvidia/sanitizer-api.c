@@ -1728,9 +1728,10 @@ sanitizer_subscribe_callback
 	  sanitizer_priority_stream_get(sanitizer_thread_context);
 	  sanitizer_kernel_stream_get(sanitizer_thread_context);
 	  sanitizer_module_load(sanitizer_thread_context);
-// might be the extra 512B memory
+// @Lin-Mao: might be the extra 512B memory
           if (sanitizer_memory_register_delegate.flag) {
             redshow_memory_register(
+              0,
               sanitizer_memory_register_delegate.persistent_id,
               sanitizer_memory_register_delegate.correlation_id,
               sanitizer_memory_register_delegate.start,
@@ -1784,6 +1785,8 @@ sanitizer_subscribe_callback
 
           int32_t persistent_id = hpcrun_cct_persistent_id(api_node);
 
+          uint32_t stream_id = sanitizer_stearm_id_query(md->stream);
+
           if (sanitizer_context_creation_flag) {
             // For some driver versions, the primary context is not fully initialized here.
 	    // So we have to delay memory register to the point when context initialization is done.
@@ -1797,7 +1800,7 @@ sanitizer_subscribe_callback
             sanitizer_memory_register_delegate.start = md->address;
             sanitizer_memory_register_delegate.end = md->address + md->size;
           } else {
-            redshow_memory_register(persistent_id, correlation_id, md->address, md->address + md->size);
+            redshow_memory_register(stream_id, persistent_id, correlation_id, md->address, md->address + md->size);
           }
 
           PRINT("Sanitizer-> Allocate memory address %p, size %zu, op %lu, id %d\n",
@@ -1826,7 +1829,9 @@ sanitizer_subscribe_callback
 
           int32_t persistent_id = hpcrun_cct_persistent_id(api_node);
 
-          redshow_memory_unregister(persistent_id, correlation_id, md->address, md->address + md->size);
+          uint32_t stream_id = sanitizer_stearm_id_query(md->stream);
+
+          redshow_memory_unregister(stream_id, persistent_id, correlation_id, md->address, md->address + md->size);
 
           PRINT("Sanitizer-> Free memory address %p, size %zu, op %lu\n", (void *)md->address, md->size, correlation_id);
 
