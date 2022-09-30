@@ -209,6 +209,14 @@ typedef struct {
   uint64_t end;
 } sanitizer_memory_register_delegate_t;
 
+typedef struct stream_to_integer {
+  CUstream stream;
+  uint32_t stream_id;
+  struct stream_to_integer* next;
+} stream_to_integer_t;
+
+static stream_to_integer_t* stream_to_integer_list_head = NULL;
+
 // only subscribed by the main thread
 static Sanitizer_SubscriberHandle sanitizer_subscriber_handle;
 // Single background process thread, can be extended
@@ -480,6 +488,47 @@ static void sanitizer_kernel_launch(CUcontext context);
 //******************************************************************************
 // private operations
 //******************************************************************************
+static uint32_t
+sanitizer_stearm_id_query
+(
+  CUstream stream
+)
+{
+  uint32_t stream_id;
+  if (stream_to_integer_list_head == NULL) {
+    stream_to_integer_list_head = (stream_to_integer_t*) hpcrun_malloc_safe(sizeof(stream_to_integer_t));
+    stream_to_integer_list_head->stream = stream;
+    stream_to_integer_list_head->stream_id = 0;
+    stream_to_integer_list_head->next = NULL;
+    stream_id = stream_to_integer_list_head->stream_id;
+  } else {
+    stream_to_integer_t* p = stream_to_integer_list_head;
+    stream_to_integer_t* q = p;
+    uint32_t count = 0;
+    bool not_fount = true;
+    while (p) {
+      if (p->stream == stream) {
+        stream_id = p->stream_id;
+        not_fount = false;
+        break;
+      } else {
+        count = p->stream_id;
+      }
+      q = p;
+      p = p->next;
+    }
+    if (not_fount) {
+      stream_to_integer_t* node = (stream_to_integer_t*) hpcrun_malloc_safe(sizeof(stream_to_integer_t));
+      node->stream = stream;
+      node->stream_id = count + 1;
+      node->next = q->next;
+      q->next = node;
+      stream_id = node->stream_id;
+    }
+  }
+  return stream_id;
+
+}
 
 
 static cct_node_t *
@@ -1889,7 +1938,9 @@ sanitizer_subscribe_callback
       // TO prevent data is incorrectly copied in the next round
       HPCRUN_SANITIZER_CALL(sanitizerStreamSynchronize, (ld->hStream));
 
-      redshow_kernel_end(sanitizer_thread_id_local, persistent_id, correlation_id);
+      uint32_t stream_id = sanitizer_stearm_id_query(ld->stream);
+
+      redshow_kernel_end(sanitizer_thread_id_local, stream_id, persistent_id, correlation_id);
 
       kernel_sampling = true;
 
@@ -1922,10 +1973,13 @@ sanitizer_subscribe_callback
     PRINT("Sanitizer-> Memcpy async %d direction %d from %p to %p, op %lu, id %d\n", md->isAsync, md->direction,
       (void *)md->srcAddress, (void *)md->dstAddress, correlation_id, persistent_id);
 
+    uint32_t src_stream_id = sanitizer_stearm_id_query(md->srcStream);
+    uint32_t dst_stream_id = sanitizer_stearm_id_query(md->dstStream);
+
     // Avoid memcpy to symbol without allocation
     // Let redshow update shadow memory
-    redshow_memcpy_register(persistent_id, correlation_id, src_host, md->srcAddress,
-      dst_host, md->dstAddress, md->size);
+    redshow_memcpy_register(persistent_id, correlation_id, src_host, src_stream_id, md->srcAddress,
+      dst_host, dst_stream_id, md->dstAddress, md->size);
   } else if (domain == SANITIZER_CB_DOMAIN_MEMSET) {
     Sanitizer_MemsetData *md = (Sanitizer_MemsetData *)cbdata;
 
@@ -1935,7 +1989,10 @@ sanitizer_subscribe_callback
 
     // Let redshow update shadow
     int32_t persistent_id = hpcrun_cct_persistent_id(api_node);
-    redshow_memset_register(persistent_id, correlation_id, md->address, md->value, md->width);
+    
+    uint32_t stream_id = sanitizer_stearm_id_query(md->stream);
+
+    redshow_memset_register(stream_id, persistent_id, correlation_id, md->address, md->value, md->width);
   } else if (domain == SANITIZER_CB_DOMAIN_SYNCHRONIZE) {
     // TODO(Keren): sync data
   }
