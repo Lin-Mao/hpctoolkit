@@ -215,7 +215,7 @@ typedef struct stream_to_integer {
   struct stream_to_integer* next;
 } stream_to_integer_t;
 
-static stream_to_integer_t* stream_to_integer_list_head = NULL;
+static stream_to_integer_t* stream_to_integer_linkedlist = NULL;
 
 // only subscribed by the main thread
 static Sanitizer_SubscriberHandle sanitizer_subscriber_handle;
@@ -495,14 +495,14 @@ sanitizer_stearm_id_query
 )
 {
   uint32_t stream_id;
-  if (stream_to_integer_list_head == NULL) {
-    stream_to_integer_list_head = (stream_to_integer_t*) hpcrun_malloc_safe(sizeof(stream_to_integer_t));
-    stream_to_integer_list_head->stream = stream;
-    stream_to_integer_list_head->stream_id = 0;
-    stream_to_integer_list_head->next = NULL;
-    stream_id = stream_to_integer_list_head->stream_id;
+  if (stream_to_integer_linkedlist == NULL) {
+    stream_to_integer_linkedlist = (stream_to_integer_t*) hpcrun_malloc_safe(sizeof(stream_to_integer_t));
+    stream_to_integer_linkedlist->stream = stream;
+    stream_to_integer_linkedlist->stream_id = 0;
+    stream_to_integer_linkedlist->next = NULL;
+    stream_id = stream_to_integer_linkedlist->stream_id;
   } else {
-    stream_to_integer_t* p = stream_to_integer_list_head;
+    stream_to_integer_t* p = stream_to_integer_linkedlist;
     stream_to_integer_t* q = p;
     uint32_t count = 0;
     bool not_fount = true;
@@ -527,6 +527,18 @@ sanitizer_stearm_id_query
     }
   }
   return stream_id;
+
+}
+
+static void
+sanitizer_destroy_stream_to_integer_linkedlist() {
+  stream_to_integer_t* p = stream_to_integer_linkedlist;
+  stream_to_integer_t* q;
+  while (p) {
+    q = p;
+    p = p->next;
+    free(q);
+  }
 
 }
 
@@ -2427,6 +2439,7 @@ sanitizer_device_shutdown(void *args)
   // Attribute performance metrics to CCTs
   redshow_flush();
 
+  sanitizer_destroy_stream_to_integer_linkedlist();
   while (atomic_load(&sanitizer_process_thread_counter));
 }
 
