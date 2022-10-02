@@ -2144,6 +2144,27 @@ sanitizer_memory_liveness_analysis_enable()
 }
 
 void
+sanitizer_data_dependency_analysis_enable()
+{
+  redshow_analysis_enable(REDSHOW_ANALYSIS_DATA_DEPENDENCY);
+  // XXX(Keren): value flow analysis must be sync
+  sanitizer_analysis_async = false;
+
+  char dir_name[PATH_MAX];
+  output_dir_config(dir_name, "/data_dependency/");
+
+  redshow_output_dir_config(REDSHOW_ANALYSIS_DATA_DEPENDENCY, dir_name);
+  redshow_analysis_config(REDSHOW_ANALYSIS_DATA_DEPENDENCY, REDSHOW_ANALYSIS_DATA_FLOW_HASH, sanitizer_data_flow_hash);
+  redshow_analysis_config(REDSHOW_ANALYSIS_DATA_DEPENDENCY, REDSHOW_ANALYSIS_READ_TRACE_IGNORE, sanitizer_read_trace_ignore);
+
+  sanitizer_gpu_patch_type = GPU_PATCH_TYPE_ADDRESS_PATCH;
+  sanitizer_gpu_patch_record_size = sizeof(gpu_patch_record_address_t);
+  sanitizer_gpu_analysis_type = GPU_PATCH_TYPE_ADDRESS_ANALYSIS;
+  sanitizer_gpu_analysis_record_size = sizeof(gpu_patch_analysis_address_t);
+}
+
+
+void
 sanitizer_callbacks_subscribe() 
 {
   sanitizer_correlation_callback = gpu_application_thread_correlation_callback;
