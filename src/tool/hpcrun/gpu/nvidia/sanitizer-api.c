@@ -1593,7 +1593,9 @@ sanitizer_kernel_launch_callback
       sanitizer_gpu_patch_aux_addr_dict_host = (gpu_patch_aux_address_dict_t *)
         hpcrun_malloc_safe(sizeof(gpu_patch_aux_address_dict_t));
     }
-    memset(sanitizer_gpu_patch_aux_addr_dict_host->hit, 0, sizeof(uint32_t) * GPU_PATCH_ADDRESS_DICT_SIZE);
+    memset(sanitizer_gpu_patch_aux_addr_dict_host->hit, 0, sizeof(uint8_t) * GPU_PATCH_ADDRESS_DICT_SIZE);
+    memset(sanitizer_gpu_patch_aux_addr_dict_host->read, 0, sizeof(uint8_t) * GPU_PATCH_ADDRESS_DICT_SIZE);
+    memset(sanitizer_gpu_patch_aux_addr_dict_host->write, 0, sizeof(uint8_t) * GPU_PATCH_ADDRESS_DICT_SIZE);
 
     // Get memory ranges from redshow
     uint64_t limit = GPU_PATCH_ADDRESS_DICT_SIZE;
