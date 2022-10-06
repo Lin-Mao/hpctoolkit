@@ -80,6 +80,7 @@ typedef struct sanitizer_buffer_t {
   uint32_t mod_id;
   int32_t kernel_id;
   uint64_t host_op_id;
+  uint32_t stream_id;
   uint32_t type;
   gpu_patch_buffer_t *gpu_patch_buffer;
 } sanitizer_buffer_t;
@@ -99,10 +100,11 @@ sanitizer_buffer_process
   uint32_t mod_id = b->mod_id;
   int32_t kernel_id = b->kernel_id;
   uint64_t host_op_id = b->host_op_id;
+  uint32_t stream_id = b->stream_id;
 
   gpu_patch_buffer_t *gpu_patch_buffer = b->gpu_patch_buffer;
   
-  redshow_analyze(thread_id, cubin_id, mod_id, kernel_id, host_op_id, gpu_patch_buffer);
+  redshow_analyze(thread_id, cubin_id, mod_id, kernel_id, host_op_id, stream_id, gpu_patch_buffer);
 }
 
 
@@ -125,6 +127,7 @@ sanitizer_buffer_produce
  uint32_t mod_id,
  int32_t kernel_id,
  uint64_t host_op_id,
+ uint32_t stream_id,
  uint32_t type,
  size_t num_records,
  atomic_uint *balance,
@@ -136,6 +139,7 @@ sanitizer_buffer_produce
   b->mod_id = mod_id;
   b->kernel_id = kernel_id;
   b->host_op_id = host_op_id;
+  b->stream_id = stream_id;
   b->type = type;
 
   // Increase balance

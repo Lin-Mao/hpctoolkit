@@ -154,6 +154,7 @@ sanitizer_buffer_channel_produce
  uint32_t mod_id,
  int32_t kernel_id,
  uint64_t host_op_id,
+ uint32_t stream_id,
  uint32_t type,
  size_t num_records,
  bool async
@@ -163,7 +164,8 @@ sanitizer_buffer_channel_produce
 
   sanitizer_buffer_t *b = sanitizer_buffer_alloc(buf_channel);
 
-  sanitizer_buffer_produce(b, thread_id, cubin_id, mod_id, kernel_id, host_op_id, type, num_records, &buf_channel->balance, async);
+  sanitizer_buffer_produce(b, thread_id, cubin_id, mod_id, kernel_id, host_op_id, stream_id, type, num_records,
+                          &buf_channel->balance, async);
 
   return b;
 }
