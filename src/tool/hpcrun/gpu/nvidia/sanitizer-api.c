@@ -1454,7 +1454,7 @@ sanitizer_kernel_launch_sync
 
     if (sanitizer_gpu_analysis_blocks != 0) {
       sanitizer_kernel_analyze(persistent_id, correlation_id, stream_id, cubin_id, mod_id, priority_stream,
-                `              kernel_stream, false);
+                              kernel_stream, false);
     }
 
     // Wait until the buffer is full or the kernel is finished
@@ -1465,7 +1465,7 @@ sanitizer_kernel_launch_sync
     // Reserve for debugging correctness
     // PRINT("num_records %zu\n", num_records);
 
-    if (sanitizer_gpu_analysis_blocks == 0) {
+    if (sanitizer_gpu_analysis_blocks == 0 && !(sanitizer_liveness_ongpu || sanitizer_torch_analysis_ongpu)) {
       buffer_analyze(persistent_id, correlation_id, stream_id, cubin_id, mod_id, sanitizer_gpu_patch_type,
         sanitizer_gpu_patch_record_size, sanitizer_gpu_patch_buffer_host,
         sanitizer_gpu_patch_buffer_device, priority_stream);
@@ -2147,8 +2147,6 @@ sanitizer_memory_liveness_analysis_enable()
 
   sanitizer_gpu_patch_type = GPU_PATCH_TYPE_ADDRESS_PATCH;
   sanitizer_gpu_patch_record_size = sizeof(gpu_patch_record_address_t);
-  sanitizer_gpu_analysis_type = GPU_PATCH_TYPE_ADDRESS_ANALYSIS;
-  sanitizer_gpu_analysis_record_size = sizeof(gpu_patch_analysis_address_t);
 
 }
 
