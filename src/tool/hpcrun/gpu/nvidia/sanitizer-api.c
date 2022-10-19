@@ -1738,14 +1738,14 @@ sanitizer_subscribe_callback
 	  sanitizer_priority_stream_get(sanitizer_thread_context);
 	  sanitizer_kernel_stream_get(sanitizer_thread_context);
 	  sanitizer_module_load(sanitizer_thread_context);
-// @Lin-Mao: might be the extra 512B memory
+// @Lin-Mao: might be the extra 512B memory, comment but may incur problems!!!
           if (sanitizer_memory_register_delegate.flag) {
-            redshow_memory_register(
-              0,
-              sanitizer_memory_register_delegate.persistent_id,
-              sanitizer_memory_register_delegate.correlation_id,
-              sanitizer_memory_register_delegate.start,
-              sanitizer_memory_register_delegate.end);
+            // redshow_memory_register(
+            //   0,
+            //   sanitizer_memory_register_delegate.persistent_id,
+            //   sanitizer_memory_register_delegate.correlation_id,
+            //   sanitizer_memory_register_delegate.start,
+            //   sanitizer_memory_register_delegate.end);
             sanitizer_memory_register_delegate.flag = false;
           }
           break;
