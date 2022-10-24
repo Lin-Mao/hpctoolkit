@@ -1843,10 +1843,72 @@ sanitizer_subscribe_callback
 
           redshow_memory_unregister(stream_id, persistent_id, correlation_id, md->address, md->address + md->size);
 
-          PRINT("Sanitizer-> Free memory address %p, size %zu, op %lu\n", (void *)md->address, md->size, correlation_id);
+          PRINT("Sanitizer-> Free memory address %p, size %zu, op %lu\n",
+                (void *)md->address, md->size, correlation_id);
 
           break;
         }
+      case SANITIZER_CBID_RESOURCE_MEMORY_ALLOC_ASYNC:
+      {
+        Sanitizer_ResourceMemoryData *md = (Sanitizer_ResourceMemoryData *)cbdata;
+
+        uint64_t correlation_id = gpu_correlation_id();
+        cct_node_t *api_node = sanitizer_correlation_callback(correlation_id, 0);
+        hpcrun_cct_retain(api_node);
+
+        hpcrun_safe_enter();
+
+        gpu_op_ccts_t gpu_op_ccts;
+        gpu_op_placeholder_flags_t gpu_op_placeholder_flags = 0;
+        gpu_op_placeholder_flags_set(&gpu_op_placeholder_flags, 
+          gpu_placeholder_type_alloc);
+        gpu_op_ccts_insert(api_node, &gpu_op_ccts, gpu_op_placeholder_flags);
+        api_node = gpu_op_ccts_get(&gpu_op_ccts, gpu_placeholder_type_alloc);
+        hpcrun_cct_retain(api_node);
+
+        hpcrun_safe_exit();
+
+        int32_t persistent_id = hpcrun_cct_persistent_id(api_node);
+
+        uint32_t stream_id = sanitizer_stearm_id_query(md->stream);
+
+        redshow_memory_register(stream_id, persistent_id, correlation_id, md->address, md->address + md->size);
+
+        PRINT("Sanitizer-> Allocate memory address %p, size %zu, op %lu, id %d\n",
+          (void *)md->address, md->size, correlation_id, persistent_id);
+
+        break;
+      }
+      case SANITIZER_CBID_RESOURCE_MEMORY_FREE_ASYNC:
+      {
+        Sanitizer_ResourceMemoryData *md = (Sanitizer_ResourceMemoryData *)cbdata;
+        
+        uint64_t correlation_id = gpu_correlation_id();
+        cct_node_t *api_node = sanitizer_correlation_callback(correlation_id, 0);
+        hpcrun_cct_retain(api_node);
+
+        hpcrun_safe_enter();
+
+        gpu_op_ccts_t gpu_op_ccts;
+        gpu_op_placeholder_flags_t gpu_op_placeholder_flags = 0;
+        gpu_op_placeholder_flags_set(&gpu_op_placeholder_flags, gpu_placeholder_type_alloc);
+        gpu_op_ccts_insert(api_node, &gpu_op_ccts, gpu_op_placeholder_flags);
+        api_node = gpu_op_ccts_get(&gpu_op_ccts, gpu_placeholder_type_alloc);
+        hpcrun_cct_retain(api_node);
+
+        hpcrun_safe_exit();
+
+        int32_t persistent_id = hpcrun_cct_persistent_id(api_node);
+
+        uint32_t stream_id = sanitizer_stearm_id_query(md->stream);
+
+        redshow_memory_unregister(stream_id, persistent_id, correlation_id, md->address, md->address + md->size);
+
+        PRINT("Sanitizer-> Free memory address %p, size %zu, op %lu\n",
+              (void *)md->address, md->size, correlation_id);
+        break;
+      }
+
       default:
         {
           break;
