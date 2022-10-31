@@ -25,6 +25,9 @@ sanitizer_memory_liveness_analysis_enable();
 void 
 sanitizer_data_dependency_analysis_enable();
 
+void 
+sanitizer_torch_monitor_analysis_enable();
+
 // for sub-allocation callback
 void
 memory_sub_alloc_callback (void *ptr, size_t size);

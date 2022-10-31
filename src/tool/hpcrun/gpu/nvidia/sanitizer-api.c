@@ -2216,7 +2216,7 @@ void
 sanitizer_data_dependency_analysis_enable()
 {
   redshow_analysis_enable(REDSHOW_ANALYSIS_DATA_DEPENDENCY);
-  // XXX(Keren): value flow analysis must be sync
+
   sanitizer_analysis_async = false;
 
   char dir_name[PATH_MAX];
@@ -2230,6 +2230,21 @@ sanitizer_data_dependency_analysis_enable()
   sanitizer_gpu_patch_record_size = sizeof(gpu_patch_record_address_t);
   sanitizer_gpu_analysis_type = GPU_PATCH_TYPE_ADDRESS_ANALYSIS;
   sanitizer_gpu_analysis_record_size = sizeof(gpu_patch_analysis_address_t);
+}
+
+void
+sanitizer_torch_monitor_analysis_enable()
+{
+  redshow_analysis_enable(REDSHOW_ANALYSIS_TORCH_MONITOR);
+  sanitizer_analysis_async = false;
+
+  char dir_name[PATH_MAX];
+  output_dir_config(dir_name, "/torch_monitor/");
+
+  redshow_output_dir_config(REDSHOW_ANALYSIS_TORCH_MONITOR, dir_name);
+
+  sanitizer_gpu_patch_type = GPU_PATCH_TYPE_ADDRESS_PATCH;
+  sanitizer_gpu_patch_record_size = sizeof(gpu_patch_record_address_t);
 }
 
 

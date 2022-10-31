@@ -115,6 +115,7 @@
 #define NVIDIA_CUDA_MEMORY_HEATMAP "gpu=nvidia,memory_heatmap"
 #define NVIDIA_CUDA_MEMORY_LIVENESS "gpu=nvidia,memory_liveness"
 #define NVIDIA_CUDA_DATA_DEPENDENCY "gpu=nvidia,data_dependency"
+#define NVIDIA_CUDA_TORCH_MONITOR "gpu=nvidia,torch_monitor"
 
 /******************************************************************************
  * local variables
@@ -379,7 +380,7 @@ METHOD_FN(supports_event, const char *ev_str)
     hpcrun_ev_is(ev_str, NVIDIA_CUDA_VALUE_PATTERN) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_DATA_FLOW) ||
     hpcrun_ev_is(ev_str, NVIDIA_CUDA_REDUNDANCY) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_MEMORY_PROFILE) ||
     hpcrun_ev_is(ev_str, NVIDIA_CUDA_MEMORY_HEATMAP) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_MEMORY_LIVENESS) ||
-    hpcrun_ev_is(ev_str, NVIDIA_CUDA_DATA_DEPENDENCY);
+    hpcrun_ev_is(ev_str, NVIDIA_CUDA_DATA_DEPENDENCY) || hpcrun_ev_is(ev_str, NVIDIA_CUDA_TORCH_MONITOR);
 #else
   return false;
 #endif
@@ -490,7 +491,7 @@ METHOD_FN(process_event_list, int lush_metrics)
   } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_REDUNDANCY) || hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_DATA_FLOW) ||
     hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_VALUE_PATTERN) || hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_PROFILE) ||
     hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_HEATMAP) || hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_MEMORY_LIVENESS) ||
-    hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_DATA_DEPENDENCY)) {
+    hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_DATA_DEPENDENCY) || hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_TORCH_MONITOR)) {
 #ifndef HPCRUN_STATIC_LINK
     if (sanitizer_bind()) {
       EEMSG("hpcrun: unable to bind to NVIDIA SANITIZER library %s\n", dlerror());
@@ -642,6 +643,8 @@ METHOD_FN(process_event_list, int lush_metrics)
       sanitizer_memory_liveness_analysis_enable();
     } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_DATA_DEPENDENCY)) {
       sanitizer_data_dependency_analysis_enable();
+    } else if (hpcrun_ev_is(nvidia_name, NVIDIA_CUDA_TORCH_MONITOR)) {
+      sanitizer_torch_monitor_analysis_enable();
     }
 
     // Register sanitizer callbacks
