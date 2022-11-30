@@ -81,6 +81,7 @@ MYSOURCES = \
 	CallPath-DataFlow.hpp CallPath-DataFlow.cpp \
 	CallPath-MemoryProfile.hpp CallPath-MemoryProfile.cpp \
 	CallPath-MemoryLiveness.hpp CallPath-MemoryLiveness.cpp \
+	CallPath-TorchMonitor.hpp CallPath-TorchMonitor.cpp \
 	advisor/GPUAdvisor.hpp advisor/GPUAdvisor-Blame.cpp \
   advisor/GPUAdvisor-Advise.cpp advisor/GPUAdvisor-Init.cpp \
 	advisor/GPUOptimizer.hpp advisor/GPUOptimizer.cpp \

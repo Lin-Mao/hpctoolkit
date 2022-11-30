@@ -508,6 +508,12 @@ ArgsHPCProf::parse(int argc, const char* const argv[], AppType type)
         find_files(memoryLivenessFiles, memory_liveness_dir, ".csv");
       }
 
+      // for torch monitor
+      const std::string torch_monitor_dir = profileFiles[i] + "/torch_monitor";
+      if (is_directory(torch_monitor_dir)) {
+        find_files(torchMonitorFiles, torch_monitor_dir, ".csv");
+      }
+
       const std::string redundancy_dir = profileFiles[i] + "/redundancy";
       if (is_directory(redundancy_dir)) {
         find_files(redundancyFiles, redundancy_dir, ".csv");

@@ -148,6 +148,7 @@ public:
   std::vector<std::string> valuePatternFiles;
   std::vector<std::string> memoryProfileFiles;  // for memory profile
   std::vector<std::string> memoryLivenessFiles; // for liveness
+  std::vector<std::string> torchMonitorFiles; // for torchmonitor
 
   bool doNormalizeTy;
 
